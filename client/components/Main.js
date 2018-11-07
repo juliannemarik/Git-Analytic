@@ -1,12 +1,12 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 
-class Navbar extends Component {
+class Main extends Component {
   componentDidMount() {}
 
   render() {
     return (
-      <div>NAVBAR</div>
+      <div>MAIN</div>
     )
   }
 
@@ -20,4 +20,4 @@ const mapDispatch = dispatch => {
   return {}
 }
 
-export default connect(mapState, mapDispatch)(Navbar)
+export default connect(mapState, mapDispatch)(Main)
