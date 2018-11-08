@@ -1,13 +1,26 @@
 import React from 'react'
-import {Navbar, Main} from './components'
+import {Navbar, Home} from './components'
 
-const App = () => {
+// MATERIAL UI IMPORTS
+import { withStyles } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline'
+
+const styles = theme => ({
+  root: {
+    width: '100%',
+    height: '100%',
+  }
+})
+
+const App = (props) => {
+  const {classes} = props
   return (
-    <div>
+    <div className={classes.root}>
+      <CssBaseline />
       <Navbar />
-      <Main />
+      <Home />
     </div>
   )
 }
 
-export default App
+export default withStyles(styles)(App)

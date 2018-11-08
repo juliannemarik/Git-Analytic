@@ -9,7 +9,6 @@ class Navbar extends Component {
       <div>NAVBAR</div>
     )
   }
-
 }
 
 const mapState = state => {

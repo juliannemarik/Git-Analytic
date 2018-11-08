@@ -13,15 +13,15 @@ notifications:
     on_failure: always # default: always (which is annoying, as it should be)
 install:
   - npm ci # faster, goes only from package-lock
-before_script:
-  - psql -c 'create database "stackathon-test";' -U postgres # remember to change this name if you change it elsewhere (e.g. package.json)
+# before_script:
+#   - psql -c 'create database "stackathon-test";' -U postgres # remember to change this name if you change it elsewhere (e.g. package.json)
 
-# before_deploy:
-#   - npm run build-client # make the bundle
-#   - rm -rf node_modules # omit from the tarball, since we skip cleanup
-# deploy:
-#   skip_cleanup: true # prevents travis from deleting the build
-#   provider: heroku
-#   app: YOUR-HEROKU-APP-NAME-HERE # see README
-#   api_key:
-#     secure: YOUR-***ENCRYPTED***-API-KEY-HERE # see README
+before_deploy:
+  - npm run build-client # make the bundle
+  - rm -rf node_modules # omit from the tarball, since we skip cleanup
+deploy:
+  skip_cleanup: true # prevents travis from deleting the build
+  provider: heroku
+  app: git-analytic # see README
+  api_key:
+    secure: 'hiLO8Lvbc95m4oH5C4xw1XMxxak1KyZFA9ll1/VB735jS9FmN0Wr7pMjwT/232ZSaEF5bh36YiSG+KNwRz7CJd9pzKgUGfYL1Rzkch85s6/5nuW5VjYkR9WyQZsBVHExN/S7/ngoVV62oaP2NHf0z1T+rP17N81wW9qSVn0Eg/djixCoXXHKh4qStU7Vd0+6cTwSog1boTZH38QjsGa8+jHwJIfveD0F8C7d06FOFAN5Q3sjjJiJNkk7L/yz1JqBvMLV1ne2wL4HnYKm2aJ8HD57lwSDiUKqvNgTnDB2GbTVWBMbooeubW3A6+2Ez1A41scTBNIHDuhq7v3LQZTPugsakns/2DMmfETp3jVwl7dxPISw+9UeGoWiGaQt4utV5eH8kLsf+nGf1K84DJs1entjFLPzRI/+p/oPi4QFvVsig5Mj6C9GmxgLmtqBg3BvD0PORtbGSevpLPMssZeN2WFFu2JZ1OQi4mECnv6IHShd223hkUMHtbG4LOaBQXLNOhvF4ytGxw9ryNId4j+eDhFLor1ikm4/Vli6z4YRHSbeBYJMXF7EUjyAU6mIKAtSF6FL5dhHTuWf9ytd6Qb0XpspZiwhhCP7G1x/Hfgm+n24RHjTBaUjkItkzCKImZnjUBJ71OQTXBFgKo6ZRmmB17gWS9kRkxLGuGmigy67T4c=' # see README
