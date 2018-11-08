@@ -1,6 +1,6 @@
 import React from 'react'
 import {Home} from './components'
-import Navbar from './components/Navbar'
+// import Navbar from './components/Navbar'
 
 // MATERIAL UI IMPORTS
 import { withStyles } from '@material-ui/core/styles';
@@ -18,7 +18,7 @@ const App = (props) => {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <Navbar />
+      {/* <Navbar /> */}
       <Home />
     </div>
   )
