@@ -6,7 +6,7 @@ class Navbar extends Component {
 
   render() {
     return (
-      <div>NAVBAR</div>
+      <div>NAVBAR UPDATED</div>
     )
   }
 }
