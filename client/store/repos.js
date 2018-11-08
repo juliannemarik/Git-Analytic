@@ -15,7 +15,7 @@ const getCommits = commits => ({type: GET_COMMITS, commits})
 // THUNK CREATORS
 export const fetchCommits = (owner, repo) => async dispatch => {
   try {
-    const {data: commits} = await axios.get(`/${owner}/${repo}/commits`)
+    const {data: commits} = await axios.get(`api/repos/${owner}/${repo}/commits`)
     dispatch(getCommits(commits))
   } catch (err) {
     console.error(err)

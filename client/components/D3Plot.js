@@ -21,20 +21,24 @@ class D3Plot extends Component {
   }
 
   componentDidMount() {
+    const {commits} = this.props
+
     const node = this.plotRef.current
     console.log('MOUNTED', node)
     const plot = d3.select(node).append("svg")
       .attr("height", "100%")
       .attr("width","100%")
 
-    const circles=[30, 45, 100]
+    // const circles=[30, 45, 100]
+    const circles = [commits[0], commits[1], commits[2]]
+    console.log(circles)
     plot.selectAll("circle.first")
-      .data(circles)
+      .data(commits)
       .enter().append("circle")
         .attr('class', 'first')
-        .attr('cx', function(d, i){return 200 * (i+1)})
-        .attr('cy', '200px')
-        .attr('r', function (d, i){return d})
+        .attr('cx', function(d, i){return 10 * (i+1)})
+        .attr('cy', '100px')
+        .attr('r', '4px')
         .attr('fill', 'blue')
 
     // plot.append("circle")

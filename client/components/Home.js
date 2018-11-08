@@ -1,6 +1,7 @@
 // EXTERNAL IMPORTS
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
+import {fetchCommits} from '../store'
 
 // INTERNAL IMPORTS
 import D3Plot from './D3Plot'
@@ -14,28 +15,38 @@ const styles = theme => ({
     height: '100%',
     display: 'flex',
     flexGrow: 1,
-    justifyContent: 'space-between',
+    justifyContent: 'space-between'
     // backgroundColor: theme.palette.secondary.main
   }
 })
 
 class Home extends Component {
+  componentDidMount() {
+    this.props.fetchCommits('Pigs-n-Blankets', 'Pigs-n-Blankets')
+  }
+
   render() {
     const {classes} = this.props
     return (
       <div className={classes.root}>
-        <D3Plot />
+        {this.props.commits.length ? <D3Plot commits={this.props.commits} /> : <div />}
       </div>
     )
   }
 }
 
 const mapState = state => {
-  return {}
+  return {
+    commits: state.repos.commits
+  }
 }
 
 const mapDispatch = dispatch => {
-  return {}
+  return {
+    fetchCommits: (owner, repo) => {
+      dispatch(fetchCommits(owner, repo))
+    }
+  }
 }
 
 export default withStyles(styles)(connect(mapState, mapDispatch)(Home))
