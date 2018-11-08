@@ -1,5 +1,6 @@
 import React from 'react'
-import {Navbar, Home} from './components'
+import {Home} from './components'
+import Navbar from './components/Navbar'
 
 // MATERIAL UI IMPORTS
 import { withStyles } from '@material-ui/core/styles';
