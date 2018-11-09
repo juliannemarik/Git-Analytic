@@ -15,21 +15,27 @@ const styles = theme => ({
     height: '100%',
     display: 'flex',
     flexGrow: 1,
-    justifyContent: 'space-between'
-    // backgroundColor: theme.palette.secondary.main
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: theme.palette.secondary.main
   }
 })
 
 class Home extends Component {
   componentDidMount() {
-    this.props.fetchCommits('Pigs-n-Blankets', 'Pigs-n-Blankets')
+    // this.props.fetchCommits('Pigs-n-Blankets', 'Pigs-n-Blankets')
   }
 
   render() {
     const {classes} = this.props
+    // return (
+    //   <div className={classes.root}>
+    //     {this.props.commits.length ? <D3Plot commits={this.props.commits} /> : <div />}
+    //   </div>
+    // )
     return (
       <div className={classes.root}>
-        {this.props.commits.length ? <D3Plot commits={this.props.commits} /> : <div />}
+        <D3Plot />
       </div>
     )
   }
