@@ -11,13 +11,13 @@ import {withStyles} from '@material-ui/core/styles'
 
 const styles = theme => ({
   root: {
-    width: '100%',
-    height: '100%',
+    // width: '100%',
+    // height: '100%',
     display: 'flex',
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: theme.palette.secondary.main
+    backgroundColor: "theme.palette.secondary.main"
   }
 })
 
