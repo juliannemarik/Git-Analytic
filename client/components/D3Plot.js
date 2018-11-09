@@ -1,6 +1,8 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import data from './data.json'
+import commitData from './data.commits.json'
+import pullData from './data.pulls.json'
+
 import * as d3 from 'd3'
 
 // MATERIAL UI IMPORTS
@@ -12,69 +14,118 @@ const styles = theme => ({
     justifyContent: 'center',
     alignItems: 'center',
     width: window.innerWidth,
-    height: window.innerHeight - 2*64,
-  },
+    height: window.innerHeight - 2 * 64
+  }
 })
 
 class D3Plot extends Component {
   constructor(props) {
-    super(props);
-    this.plotRef = React.createRef();
+    super(props)
+    this.plotRef = React.createRef()
   }
 
   componentDidMount() {
     // const {commits} = this.props
-    const commits = data
+    const commits = commitData
+    const pulls = pullData
     const node = this.plotRef.current
 
     // SVG PROPERTIES
     const margins = {left: 50, right: 50, top: 40, bottom: 0}
     const width = window.innerWidth - margins.right - margins.left
-    const height = window.innerHeight - 2*64 - margins.top
+    const height = window.innerHeight - 2 * 64 - margins.top
 
     // DEFINE SVG ELEMENT
-    const plot = d3.select(node).append("svg")
-      .attr("height", height)
-      .attr("width", width)
+    const plot = d3
+      .select(node)
+      .append('svg')
+      .attr('height', height)
+      .attr('width', width)
 
     // DEFINE TIME X SCALE
-    const minDate = new Date(commits[commits.length-1].date)
+    const minDate = new Date(commits[commits.length - 1].date)
     const maxDate = new Date(commits[0].date)
-    console.log(minDate, maxDate)
-    let xScale = d3.scaleTime()
+    let xScale = d3
+      .scaleTime()
       .domain([minDate, maxDate])
-      .range([0, width-2*margins.right])
+      .range([0, width - 2 * margins.right])
 
     // DEFINE TIME Y SCALE
-    const minTime = new Date("January 1, 2000, 00:00:00")
-    const maxTime = new Date("January 2, 2000, 00:00:00")
-    let yScale = d3.scaleTime()
+    const minTime = new Date('January 1, 2000, 01:00:0')
+    const maxTime = new Date('January 1, 2000, 23:59:59')
+    let yScale = d3
+      .scaleTime()
       .domain([minTime, maxTime])
-      .range([height-margins.top, 0])
+      .range([height - margins.top, 0])
 
     // DEFINE AXES
-    let xAxis = d3.axisBottom(xScale).tickPadding(10).tickSize(10)
-    let yAxis = d3.axisLeft(yScale).tickPadding(10).tickSize(10)
+    const xAxis = d3
+      .axisBottom(xScale)
+      .tickPadding(10)
+      .tickSize(10)
+
+    const yAxis = d3
+      .axisLeft(yScale)
+      .tickPadding(10)
+      .tickSize(10)
+      .ticks(d3.timeHour)
 
     // DEFINE PLOT GROUP
-    let plotGroup = plot.append("g")
-      .attr("transform", "translate("+margins.left+", "+margins.top/2+")")
-      plotGroup.append("g")
+    const plotGroup = plot
+      .append('g')
+      .attr(
+        'transform',
+        'translate(' + margins.left + ', ' + margins.top / 2 + ')'
+      )
+    plotGroup
+      .append('g')
+      .attr('id', 'axisY')
       .call(yAxis)
-      plotGroup.append("g")
-      .call(xAxis)
+    plotGroup.append('g').call(xAxis)
 
     // CREATE CIRCLES - COMMITS
-    const circles = [0, 1, 2]
-    console.log(circles)
-    // plot.selectAll("circle.first")
-    //   .data(circles)
-    //   .enter().append("circle")
-    //     .attr('class', 'first')
-    //     .attr('cx', function(d, i){return 10 * (i+1)})
-    //     .attr('cy', '100px')
-    //     .attr('r', '4px')
-    //     .attr('fill', 'blue')
+    // const circles = [
+    //   {date: 'November 7, 2018, 13:25:42', time: 'January 1, 2000, 13:25:42'},
+    //   {date: 'October 31, 2018, 13:33:51', time: 'January 1, 2000, 13:33:51'},
+    //   {date: 'September 15, 2017, 11:54:57', time: 'January 1, 2000, 11:54:57'}
+    // ]
+
+    plotGroup
+      .selectAll('circle.commits')
+      .data(commits)
+      .enter()
+      .append('circle')
+      .attr('class', 'commits')
+      .attr('cx', function(d, i) {
+        return xScale(new Date(d.date))
+      })
+      .attr('cy', function(d, i) {
+        return yScale(new Date(d.time))
+      })
+      .attr('r', '5px')
+      .style('fill', '#0096FF')
+      .style('opacity', 0.5)
+      .style('stroke', '#011993')
+      .style('stroke-width', '1px')
+
+    // CREATE CIRCLES - PULLS
+    plotGroup
+      .selectAll('circle.pulls')
+      .data(pulls)
+      .enter()
+      .append('circle')
+      .attr('class', 'commits')
+      .attr('cx', function(d, i) {
+        return xScale(new Date(d.dateCreated))
+      })
+      .attr('cy', function(d, i) {
+        return yScale(new Date(d.timeCreated))
+      })
+      .attr('r', '5px')
+      .style('fill', '#FFB20E')
+      .style('opacity', 0.5)
+      .style('stroke', '#E8750B')
+      .style('stroke-width', '1px')
   }
 
   componentShouldMount() {
@@ -87,11 +138,9 @@ class D3Plot extends Component {
     d3.select(node)
   }
 
-  render () {
-    const { classes } = this.props
-    return (
-      <div className = {classes.root} ref={this.plotRef} id="plot"/>
-    )
+  render() {
+    const {classes} = this.props
+    return <div className={classes.root} ref={this.plotRef} id="plot" />
   }
 }
 

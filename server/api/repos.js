@@ -65,8 +65,10 @@ router.get('/:owner/:repo/pulls', async (req, res, next) => {
       filteredPulls.push({
         title: pull.title,
         userAvatarUrl: pull.user.avatar_url,
-        dataCreated: pull.created_at,
-        dateClosed: pull.closed_at
+        dateCreated: dateFormat(pull.created_at, "mmmm d, yyyy, HH:MM:ss"),
+        timeCreated: `January 1, 2000, ${dateFormat(pull.created_at, "HH:MM:ss")}`,
+        dateClosed: dateFormat(pull.closed_at, "mmmm d, yyyy, HH:MM:ss"),
+        timeClosed: `January 1, 2000, ${dateFormat(pull.closed_at, "HH:MM:ss")}`,
       })
     })
 

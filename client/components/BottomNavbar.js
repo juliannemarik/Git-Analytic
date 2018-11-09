@@ -31,16 +31,7 @@ function BottomNavbar(props) {
   return (
     <div className={classes.root}>
       <BottomNavigation position="static" color="default" className={classes.bottomNavgation}>
-        <BottomNavigationAction>
-
-        </BottomNavigationAction>
-          {/* <Typography
-            // className={classes.text}
-            // variant="h6"
-            // color="inherit"
-          >
-            CONTROLS HERE
-          </Typography> */}
+        <BottomNavigationAction></BottomNavigationAction>
       </BottomNavigation>
     </div>
   )

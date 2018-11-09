@@ -26,3 +26,9 @@ form div {
   display: inline-block;
 }
 
+#axisY .tick:nth-child(2n) text {
+  visibility: hidden;
+}
+#axisY .tick:nth-child(2n) line {
+  visibility: hidden;
+}
