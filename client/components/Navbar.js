@@ -1,39 +1,58 @@
 // EXTERNAL IMPORTS
-import React, {Component} from 'react'
+import React from 'react'
 
 // MATERIAL UI IMPORTS
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
+import PropTypes from 'prop-types'
+import {withStyles} from '@material-ui/core/styles'
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
+import Typography from '@material-ui/core/Typography'
 
-const styles = {
+const styles = theme => ({
   root: {
-    flexGrow: 1,
     display: 'flex',
-    alignItems: 'center'
+    flexGrow: 1
   },
-};
+  appBar: {
+    boxShadow: 'none',
+    borderBottom: '1px solid #D8DEE2',
+  },
+  logo: {
+    width: '40px',
+    marginRight: '20px',
+    marginLeft: '20px'
+  },
+  title: {
+    display: 'none',
+    [theme.breakpoints.up('sm')]: {display: 'block'},
+    fontWeight: 300,
+    letterSpacing: theme.spacing.unit * 1 / 4
+  }
+})
 
 function Navbar(props) {
-  const { classes } = props;
+  const {classes} = props
 
   return (
     <div className={classes.root}>
-      <AppBar position="static" color="default">
+      <AppBar position="static" color="default" className={classes.appBar}>
         <Toolbar>
-          <Typography variant="h6" color="inherit">
+          <img className={classes.logo} src="/gitAnalyticLogo.png" />
+          <Typography
+            className={classes.title}
+            variant="h6"
+            color="inherit"
+          >
             GIT ANALYTIC
           </Typography>
         </Toolbar>
       </AppBar>
     </div>
-  );
+  )
 }
 
 Navbar.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
+  classes: PropTypes.object.isRequired
+}
 
-export default withStyles(styles)(Navbar);
+export default withStyles(styles)(Navbar)

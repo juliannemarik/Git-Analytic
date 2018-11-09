@@ -1,6 +1,5 @@
 import React from 'react'
-import {Home} from './components'
-import Navbar from './components/Navbar'
+import {Home, Navbar, BottomNavbar} from './components'
 
 // MATERIAL UI IMPORTS
 import { withStyles } from '@material-ui/core/styles';
@@ -10,6 +9,7 @@ const styles = theme => ({
   root: {
     width: '100%',
     height: '100%',
+    // backgroundColor: 'blue'
   }
 })
 
@@ -20,6 +20,7 @@ const App = (props) => {
       <CssBaseline />
       <Navbar />
       <Home />
+      <BottomNavbar />
     </div>
   )
 }
