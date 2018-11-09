@@ -2,6 +2,7 @@ const router = require('express').Router()
 module.exports = router
 const axios = require('axios')
 const octokit = require('@octokit/rest')()
+const dateFormat = require('dateformat');
 
 // CLIENT ID AND SECRET
 const clientId = process.env.GITHUB_CLIENT_ID
@@ -28,7 +29,8 @@ router.get('/:owner/:repo/commits', async (req, res, next) => {
       if (commit.commit.committer.name !== 'GitHub') {
         filteredCommits.push({
           message: commit.commit.message,
-          date: commit.commit.committer.date,
+          date: dateFormat(commit.commit.committer.date, "mmmm d, yyyy, HH:MM:ss"),
+          time: `January 1, 2000, ${dateFormat(commit.commit.committer.date, "HH:MM:ss")}`,
           userName: commit.commit.committer.name,
           userEmail: commit.commit.committer.email,
           userAvatarUrl: commit.committer.avatar_url
