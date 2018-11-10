@@ -32,7 +32,7 @@ class Home extends Component {
     return (
       // <D3Plot />
       <div className={classes.root}>
-        {this.props.commits.length && this.props.pulls.length ? <D3Plot /> : <div className={classes.blankPlot}/> }
+        {this.props.owner.length && !this.props.commits.isFetching && !this.props.pulls.isFetching ? <D3Plot /> : <div className={classes.blankPlot}/> }
       </div>
     )
   }
@@ -40,6 +40,7 @@ class Home extends Component {
 
 const mapState = state => {
   return {
+    owner: state.repos.owner,
     commits: state.repos.commits,
     pulls: state.repos.pulls
   }

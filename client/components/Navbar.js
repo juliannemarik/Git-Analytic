@@ -69,22 +69,11 @@ class Navbar extends React.Component {
   }
 
   handleSubmit = () => {
-    // if (!this.props.owner && !this.props.repository) {
-    //   const {repository, owner} = this.state
-    //   this.props.setOwner(this.state.owner)
-    //   this.props.setRepository(this.state.repository)
-    //   this.props.fetchCommits(owner, repository)
-    //   this.props.fetchPulls(owner, repository)
-    // }
-    // else {
-    //   console.log("NEEDS TO BE UPDATED")
-    // }
       const {repository, owner} = this.state
       this.props.setOwner(this.state.owner)
       this.props.setRepository(this.state.repository)
-      this.props.fetchCommits(owner, repository)
-      this.props.fetchPulls(owner, repository)
-
+      this.props.fetchCommits(owner, repository, this.props.commits)
+      this.props.fetchPulls(owner, repository, this.props.pulls)
   }
 
   render() {
@@ -150,12 +139,12 @@ class Navbar extends React.Component {
 
 const mapState = state => {
   return {
-    owner: state.repos.owner,
-    repository: state.repos.repository
+    commits: state.repos.commits,
+    pulls: state.repos.pulls
   }
 }
 
-const mapDispatch = dispatch => {
+const mapDispatch = (dispatch, state) => {
   return {
     setOwner: (owner) => {
       dispatch(setOwner(owner))
@@ -163,11 +152,11 @@ const mapDispatch = dispatch => {
     setRepository: (repository) => {
       dispatch(setRepository(repository))
     },
-    fetchCommits: (owner, repo) => {
-      dispatch(fetchCommits(owner, repo))
+    fetchCommits: (owner, repo, commits) => {
+      dispatch(fetchCommits(owner, repo, commits))
     },
-    fetchPulls: (owner, repo) => {
-      dispatch(fetchPulls(owner, repo))
+    fetchPulls: (owner, repo, pulls) => {
+      dispatch(fetchPulls(owner, repo, pulls))
     }
   }
 }

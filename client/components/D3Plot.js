@@ -18,6 +18,7 @@ const styles = theme => ({
     height: window.innerHeight - 2 * 64
   }
 })
+let updateFunc = ''
 
 class D3Plot extends Component {
   constructor(props) {
@@ -27,11 +28,8 @@ class D3Plot extends Component {
 
   componentDidMount() {
     let {commits, pulls} = this.props
-    commits = commits[0] ? commits : []
-    pulls = pulls[0] ? pulls : []
     const node = this.plotRef.current
-
-    createPlot(node, commits, pulls)
+    updateFunc = createPlot(node, commits, pulls)
   }
 
   componentShouldMount() {
@@ -39,12 +37,7 @@ class D3Plot extends Component {
   }
 
   componentDidUpdate() {
-    let {commits, pulls} = this.props
-    commits = commits[0] ? commits : []
-    pulls = pulls[0] ? pulls : []
-    const node = this.plotRef.current
-    console.log('UPDATED', node)
-    createPlot(node, commits, pulls)
+   console.log("UPDATE FROM D3PLOT")
   }
 
   render() {

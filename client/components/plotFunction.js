@@ -3,6 +3,11 @@ import * as d3 from 'd3'
 // CREATE ORIGINAL PLOT
 // ----------------------
 export const createPlot = (node, commits, pulls) => {
+
+  // RE-DEFINE COMMIS & PULLS
+  commits = commits.array
+  pulls = pulls.array
+
   // SVG PROPERTIES
   const margins = {left: 50, right: 50, top: 40, bottom: 0}
   const width = window.innerWidth - margins.right - margins.left
@@ -107,7 +112,7 @@ export const createPlot = (node, commits, pulls) => {
     .data(pulls)
     .enter()
     .append('circle')
-    .attr('class', 'commits')
+    .attr('class', 'pulls')
     .attr('cx', function(d, i) {
       return xScale(new Date(d.dateCreated))
     })
@@ -140,6 +145,9 @@ export const createPlot = (node, commits, pulls) => {
   // ----------------------
   return function updateMe(updatedCommits, updatedPulls) {
     // RE-DEFINE X SCALE
+    console.log('UPDATED COMMITS ---->', updatedCommits)
+    console.log('UPDATED PULLS ---->', updatedPulls)
+
     commitMax = updatedCommits[0] ? new Date(updatedCommits[0].date) : null
     commitMin = updatedCommits[updatedCommits.length - 1]
       ? new Date(updatedCommits[updatedCommits.length - 1].date)
@@ -155,9 +163,9 @@ export const createPlot = (node, commits, pulls) => {
     xScale.domain([minDate, maxDate])
 
     // MAKE THE CHANGES
-    plot = d3.select(node).transition();
-    gX.duration(750).call(xAxis);
-    commitCircles.duration(750).data(updatedCommits)
-    pullCircles.duration(750).data(updatedPulls)
+    // plot = d3.select(node).transition();
+    plot.select('#axisX').call(xAxis);
+    plot.select('.commits').data(updatedCommits)
+    plot.select('.pulls').data(updatedPulls)
   }
 }
