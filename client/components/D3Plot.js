@@ -47,7 +47,8 @@ class D3Plot extends Component {
     const maxDate = new Date(commits[0].date)
     let xScale = d3
       .scaleTime()
-      .domain([minDate, maxDate])
+      .domain(d3.extent(commits, function(d){ return new Date(d.date); }))
+      // .domain([minDate, maxDate])
       .range([0, width - 2 * margins.right])
 
     // DEFINE TIME Y SCALE
@@ -70,6 +71,21 @@ class D3Plot extends Component {
       .tickSize(10)
       .ticks(d3.timeHour)
 
+    // CALL ZOOM
+    const zoom = d3.zoom()
+      .scaleExtent([1, 100])
+      .translateExtent([[0, 0], [width, height]])
+      .extent([[0, 0], [width, height]])
+      .on("zoom", zoomed)
+
+    //
+    plot.append("defs").append("clipPath")
+      .attr("id", "clip")
+    .append("rect")
+      .attr("width", width)
+      .attr("height", height)
+      .style("fill", 'red')
+      .style('opacity', '0.1')
 
     // DEFINE PLOT GROUP
     const plotGroup = plot
@@ -82,7 +98,7 @@ class D3Plot extends Component {
       .append('g')
       .attr('id', 'axisY')
       .call(yAxis)
-    plotGroup.append('g').call(xAxis)
+    const gX = plotGroup.append('g').attr('id', 'axisX').call(xAxis)
 
     // CREATE CIRCLES - COMMITS
     // const circles = [
@@ -91,7 +107,7 @@ class D3Plot extends Component {
     //   {date: 'September 15, 2017, 11:54:57', time: 'January 1, 2000, 11:54:57'}
     // ]
 
-    plotGroup
+    const commitCircles = plotGroup
       .selectAll('circle.commits')
       .data(commits)
       .enter()
@@ -110,7 +126,7 @@ class D3Plot extends Component {
       .style('stroke-width', '1px')
 
     // CREATE CIRCLES - PULLS
-    plotGroup
+    const pullCircles = plotGroup
       .selectAll('circle.pulls')
       .data(pulls)
       .enter()
@@ -127,6 +143,18 @@ class D3Plot extends Component {
       .style('opacity', 0.5)
       .style('stroke', '#E8750B')
       .style('stroke-width', '1px')
+
+
+      plot.call(zoom).transition()
+
+      function zoomed() {
+        const t = d3.event.transform, xt = t.rescaleX(xScale)
+        gX.call(xAxis.scale(xt))
+        commitCircles
+          .attr("cx", function(d) {return xt(new Date(d.date))})
+        // commitCircles.attr("transform", d3.event.transform)
+        // pullCircles.attr("transform", d3.event.transform)
+      }
   }
 
   componentShouldMount() {
