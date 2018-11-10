@@ -69,11 +69,22 @@ class Navbar extends React.Component {
   }
 
   handleSubmit = () => {
-    const {repository, owner} = this.state
-    this.props.setOwner(owner)
-    this.props.setRepository(repository)
-    this.props.fetchCommits(owner, repository)
-    this.props.fetchPulls(owner, repository)
+    // if (!this.props.owner && !this.props.repository) {
+    //   const {repository, owner} = this.state
+    //   this.props.setOwner(this.state.owner)
+    //   this.props.setRepository(this.state.repository)
+    //   this.props.fetchCommits(owner, repository)
+    //   this.props.fetchPulls(owner, repository)
+    // }
+    // else {
+    //   console.log("NEEDS TO BE UPDATED")
+    // }
+      const {repository, owner} = this.state
+      this.props.setOwner(this.state.owner)
+      this.props.setRepository(this.state.repository)
+      this.props.fetchCommits(owner, repository)
+      this.props.fetchPulls(owner, repository)
+
   }
 
   render() {
@@ -138,7 +149,10 @@ class Navbar extends React.Component {
 }
 
 const mapState = state => {
-  return {}
+  return {
+    owner: state.repos.owner,
+    repository: state.repos.repository
+  }
 }
 
 const mapDispatch = dispatch => {

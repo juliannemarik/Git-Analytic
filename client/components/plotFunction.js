@@ -1,34 +1,30 @@
 import * as d3 from 'd3'
 
-export const plotFunction = (node, commits, pulls) => {
-  // let {commits, pulls} = this.props
-  // commits = commits[0] ? commits : []
-  // pulls = pulls[0] ? pulls : []
-  // const commits = commitData
-  // const pulls = pullData
-  // const node = this.plotRef.current
-
+// CREATE ORIGINAL PLOT
+// ----------------------
+export const createPlot = (node, commits, pulls) => {
   // SVG PROPERTIES
   const margins = {left: 50, right: 50, top: 40, bottom: 0}
   const width = window.innerWidth - margins.right - margins.left
   const height = window.innerHeight - 2 * 64 - margins.top
 
   // DEFINE SVG ELEMENT
-  const plot = d3
+  let plot = d3
     .select(node)
     .append('svg')
     .attr('height', height)
     .attr('width', width)
 
   // DEFINE TIME X SCALE
-  const commitMax = new Date(commits[0].date)
-  const commitMin = new Date(commits[commits.length - 1].date)
-  const pullMax = new Date(pulls[0].dateCreated)
-  const pullMin = new Date(pulls[pulls.length - 1].dateCreated)
+  let commitMax = new Date(commits[0].date)
+  let commitMin = new Date(commits[commits.length - 1].date)
+  let pullMax = pulls[0] ? new Date(pulls[0].dateCreated) : commitMax
+  let pullMin = pulls[pulls.length - 1]
+    ? new Date(pulls[pulls.length - 1].dateCreated)
+    : commitMin
 
-  const minDate = new Date(Math.min.apply(null, [commitMin, pullMin]))
-  const maxDate = new Date(Math.max.apply(null, [commitMax, pullMax]))
-  console.log(minDate, maxDate)
+  let minDate = new Date(Math.min.apply(null, [commitMin, pullMin]))
+  let maxDate = new Date(Math.max.apply(null, [commitMax, pullMax]))
   let xScale = d3
     .scaleTime()
     .domain([minDate, maxDate])
@@ -43,12 +39,12 @@ export const plotFunction = (node, commits, pulls) => {
     .range([height - margins.top, 0])
 
   // DEFINE AXES
-  const xAxis = d3
+  let xAxis = d3
     .axisBottom(xScale)
     .tickPadding(10)
     .tickSize(10)
 
-  const yAxis = d3
+  let yAxis = d3
     .axisLeft(yScale)
     .tickPadding(10)
     .tickSize(10)
@@ -72,7 +68,7 @@ export const plotFunction = (node, commits, pulls) => {
     .attr('height', height - margins.top)
 
   // DEFINE PLOT GROUP
-  const plotGroup = plot
+  let plotGroup = plot
     .append('g')
     .attr(
       'transform',
@@ -82,12 +78,12 @@ export const plotFunction = (node, commits, pulls) => {
     .append('g')
     .attr('id', 'axisY')
     .call(yAxis)
-  const gX = plotGroup
+  let gX = plotGroup
     .append('g')
     .attr('id', 'axisX')
     .call(xAxis)
 
-  const commitCircles = plotGroup
+  let commitCircles = plotGroup
     .selectAll('circle.commits')
     .data(commits)
     .enter()
@@ -106,7 +102,7 @@ export const plotFunction = (node, commits, pulls) => {
     .style('stroke-width', '1px')
 
   // CREATE CIRCLES - PULLS
-  const pullCircles = plotGroup
+  let pullCircles = plotGroup
     .selectAll('circle.pulls')
     .data(pulls)
     .enter()
@@ -129,7 +125,7 @@ export const plotFunction = (node, commits, pulls) => {
 
   // ZOOM FUNCTION
   function zoomed() {
-    const t = d3.event.transform,
+    let t = d3.event.transform,
       xt = t.rescaleX(xScale)
     gX.call(xAxis.scale(xt))
     commitCircles.attr('cx', function(d) {
@@ -138,5 +134,30 @@ export const plotFunction = (node, commits, pulls) => {
     pullCircles.attr('cx', function(d) {
       return xt(new Date(d.dateCreated))
     })
+  }
+
+  // UPDATE EXISTING PLOT
+  // ----------------------
+  return function updateMe(updatedCommits, updatedPulls) {
+    // RE-DEFINE X SCALE
+    commitMax = updatedCommits[0] ? new Date(updatedCommits[0].date) : null
+    commitMin = updatedCommits[updatedCommits.length - 1]
+      ? new Date(updatedCommits[updatedCommits.length - 1].date)
+      : null
+    pullMax = updatedPulls[0] ? new Date(updatedPulls[0].dateCreated) : null
+    pullMin = updatedPulls[updatedPulls.length - 1]
+      ? new Date(updatedPulls[updatedPulls.length - 1].dateCreated)
+      : null
+
+    minDate = new Date(Math.min.apply(null, [commitMin, pullMin]))
+    maxDate = new Date(Math.max.apply(null, [commitMax, pullMax]))
+
+    xScale.domain([minDate, maxDate])
+
+    // MAKE THE CHANGES
+    plot = d3.select(node).transition();
+    gX.duration(750).call(xAxis);
+    commitCircles.duration(750).data(updatedCommits)
+    pullCircles.duration(750).data(updatedPulls)
   }
 }
