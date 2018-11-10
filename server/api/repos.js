@@ -19,7 +19,7 @@ router.get('/:owner/:repo/commits', async (req, res, next) => {
       `${url}&&client_id=${clientId}&&client_secret=${clientSecret}`
     )
     let {data} = response
-    while (octokit.hasNextPage(response)) {
+    while (octokit.hasNextPage(response) && data.length <= 500) {
       response = await octokit.getNextPage(response)
       data = data.concat(response.data)
     }

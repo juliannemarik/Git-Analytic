@@ -82,10 +82,12 @@ class D3Plot extends Component {
     plot.append("defs").append("clipPath")
       .attr("id", "clip")
     .append("rect")
-      .attr("width", width)
-      .attr("height", height)
-      .style("fill", 'red')
-      .style('opacity', '0.1')
+      .attr("width", width - margins.left - margins.right)
+      .attr("height", height - margins.top)
+      // .attr(
+      //   'transform',
+      //   'translate(' + margins.left + ', ' + margins.top / 2 + ')'
+      // )
 
     // DEFINE PLOT GROUP
     const plotGroup = plot
@@ -152,8 +154,6 @@ class D3Plot extends Component {
         gX.call(xAxis.scale(xt))
         commitCircles
           .attr("cx", function(d) {return xt(new Date(d.date))})
-        // commitCircles.attr("transform", d3.event.transform)
-        // pullCircles.attr("transform", d3.event.transform)
       }
   }
 
