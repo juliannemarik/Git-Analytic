@@ -11,13 +11,18 @@ import {withStyles} from '@material-ui/core/styles'
 
 const styles = theme => ({
   root: {
-    // width: '100%',
-    // height: '100%',
     display: 'flex',
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: "theme.palette.secondary.main"
+  },
+  blankPlot: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: window.innerWidth,
+    height: window.innerHeight - 2 * 64
   }
 })
 
@@ -28,14 +33,10 @@ class Home extends Component {
 
   render() {
     const {classes} = this.props
-    // return (
-    //   <div className={classes.root}>
-    //     {this.props.commits.length ? <D3Plot commits={this.props.commits} /> : <div />}
-    //   </div>
-    // )
     return (
+      // <D3Plot />
       <div className={classes.root}>
-        <D3Plot />
+        {this.props.commits.length ? <D3Plot /> : <div className={classes.blankPlot}/> }
       </div>
     )
   }

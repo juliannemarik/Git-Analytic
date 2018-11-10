@@ -25,8 +25,8 @@ class D3Plot extends Component {
   }
 
   componentDidMount() {
-    // const {commits} = this.props
-    const commits = commitData
+    const {commits} = this.props
+    // const commits = commitData
     const pulls = pullData
     const node = this.plotRef.current
 
@@ -69,6 +69,7 @@ class D3Plot extends Component {
       .tickPadding(10)
       .tickSize(10)
       .ticks(d3.timeHour)
+
 
     // DEFINE PLOT GROUP
     const plotGroup = plot
@@ -145,7 +146,9 @@ class D3Plot extends Component {
 }
 
 const mapState = state => {
-  return {}
+  return {
+    commits: state.repos.commits
+  }
 }
 
 const mapDispatch = dispatch => {
