@@ -25,9 +25,11 @@ class D3Plot extends Component {
   }
 
   componentDidMount() {
-    const {commits} = this.props
+    let {commits, pulls} = this.props
+    commits = commits[0] ? commits : []
+    pulls = pulls[0] ? pulls : []
     // const commits = commitData
-    const pulls = pullData
+    // const pulls = pullData
     const node = this.plotRef.current
 
     // SVG PROPERTIES
@@ -43,12 +45,22 @@ class D3Plot extends Component {
       .attr('width', width)
 
     // DEFINE TIME X SCALE
-    const minDate = new Date(commits[commits.length - 1].date)
-    const maxDate = new Date(commits[0].date)
+    const commitMax = new Date(commits[0].date)
+    const commitMin = new Date(commits[commits.length - 1].date)
+    const pullMax = new Date(pulls[0].dateCreated)
+    const pullMin = new Date(pulls[pulls.length - 1].dateCreated)
+
+    const minDate = new Date(Math.min.apply(null, [commitMin, pullMin]))
+    const maxDate = new Date(Math.max.apply(null,[commitMax, pullMax]))
+    console.log(minDate, maxDate)
     let xScale = d3
       .scaleTime()
-      .domain(d3.extent(commits, function(d){ return new Date(d.date); }))
-      // .domain([minDate, maxDate])
+      .domain([minDate, maxDate])
+      // .domain(
+      //   d3.extent(commits, function(d) {
+      //     return new Date(d.date)
+      //   })
+      // )
       .range([0, width - 2 * margins.right])
 
     // DEFINE TIME Y SCALE
@@ -72,22 +84,21 @@ class D3Plot extends Component {
       .ticks(d3.timeHour)
 
     // CALL ZOOM
-    const zoom = d3.zoom()
+    const zoom = d3
+      .zoom()
       .scaleExtent([1, 100])
       .translateExtent([[0, 0], [width, height]])
       .extent([[0, 0], [width, height]])
-      .on("zoom", zoomed)
+      .on('zoom', zoomed)
 
-    //
-    plot.append("defs").append("clipPath")
-      .attr("id", "clip")
-    .append("rect")
-      .attr("width", width - margins.left - margins.right)
-      .attr("height", height - margins.top)
-      // .attr(
-      //   'transform',
-      //   'translate(' + margins.left + ', ' + margins.top / 2 + ')'
-      // )
+    // DEFINE AREA TO CLIP
+    plot
+      .append('defs')
+      .append('clipPath')
+      .attr('id', 'clip')
+      .append('rect')
+      .attr('width', width - margins.left - margins.right)
+      .attr('height', height - margins.top)
 
     // DEFINE PLOT GROUP
     const plotGroup = plot
@@ -100,14 +111,10 @@ class D3Plot extends Component {
       .append('g')
       .attr('id', 'axisY')
       .call(yAxis)
-    const gX = plotGroup.append('g').attr('id', 'axisX').call(xAxis)
-
-    // CREATE CIRCLES - COMMITS
-    // const circles = [
-    //   {date: 'November 7, 2018, 13:25:42', time: 'January 1, 2000, 13:25:42'},
-    //   {date: 'October 31, 2018, 13:33:51', time: 'January 1, 2000, 13:33:51'},
-    //   {date: 'September 15, 2017, 11:54:57', time: 'January 1, 2000, 11:54:57'}
-    // ]
+    const gX = plotGroup
+      .append('g')
+      .attr('id', 'axisX')
+      .call(xAxis)
 
     const commitCircles = plotGroup
       .selectAll('circle.commits')
@@ -146,15 +153,21 @@ class D3Plot extends Component {
       .style('stroke', '#E8750B')
       .style('stroke-width', '1px')
 
+    // CALL ZOOM ON PLOT
+    plot.call(zoom).transition()
 
-      plot.call(zoom).transition()
-
-      function zoomed() {
-        const t = d3.event.transform, xt = t.rescaleX(xScale)
-        gX.call(xAxis.scale(xt))
-        commitCircles
-          .attr("cx", function(d) {return xt(new Date(d.date))})
-      }
+    // ZOOM FUNCTION
+    function zoomed() {
+      const t = d3.event.transform,
+        xt = t.rescaleX(xScale)
+      gX.call(xAxis.scale(xt))
+      commitCircles.attr('cx', function(d) {
+        return xt(new Date(d.date))
+      })
+      pullCircles.attr('cx', function(d) {
+        return xt(new Date(d.dateCreated))
+      })
+    }
   }
 
   componentShouldMount() {
@@ -175,7 +188,8 @@ class D3Plot extends Component {
 
 const mapState = state => {
   return {
-    commits: state.repos.commits
+    commits: state.repos.commits,
+    pulls: state.repos.pulls
   }
 }
 

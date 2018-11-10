@@ -1,7 +1,7 @@
 // EXTERNAL IMPORTS
 import React from 'react'
 import {connect} from 'react-redux'
-import {fetchCommits} from '../store'
+import {setOwner, setRepository, fetchCommits, fetchPulls} from '../store'
 
 // MATERIAL UI IMPORTS
 import PropTypes from 'prop-types'
@@ -70,7 +70,10 @@ class Navbar extends React.Component {
 
   handleSubmit = () => {
     const {repository, owner} = this.state
+    this.props.setOwner(owner)
+    this.props.setRepository(repository)
     this.props.fetchCommits(owner, repository)
+    this.props.fetchPulls(owner, repository)
   }
 
   render() {
@@ -140,8 +143,17 @@ const mapState = state => {
 
 const mapDispatch = dispatch => {
   return {
+    setOwner: (owner) => {
+      dispatch(setOwner(owner))
+    },
+    setRepository: (repository) => {
+      dispatch(setRepository(repository))
+    },
     fetchCommits: (owner, repo) => {
       dispatch(fetchCommits(owner, repo))
+    },
+    fetchPulls: (owner, repo) => {
+      dispatch(fetchPulls(owner, repo))
     }
   }
 }

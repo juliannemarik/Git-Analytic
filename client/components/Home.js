@@ -27,16 +27,12 @@ const styles = theme => ({
 })
 
 class Home extends Component {
-  componentDidMount() {
-    // this.props.fetchCommits('Pigs-n-Blankets', 'Pigs-n-Blankets')
-  }
-
   render() {
     const {classes} = this.props
     return (
       // <D3Plot />
       <div className={classes.root}>
-        {this.props.commits.length ? <D3Plot /> : <div className={classes.blankPlot}/> }
+        {this.props.commits.length && this.props.pulls.length ? <D3Plot /> : <div className={classes.blankPlot}/> }
       </div>
     )
   }
@@ -44,16 +40,9 @@ class Home extends Component {
 
 const mapState = state => {
   return {
-    commits: state.repos.commits
+    commits: state.repos.commits,
+    pulls: state.repos.pulls
   }
 }
 
-const mapDispatch = dispatch => {
-  return {
-    fetchCommits: (owner, repo) => {
-      dispatch(fetchCommits(owner, repo))
-    }
-  }
-}
-
-export default withStyles(styles)(connect(mapState, mapDispatch)(Home))
+export default withStyles(styles)(connect(mapState)(Home))
