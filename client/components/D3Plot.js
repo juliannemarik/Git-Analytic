@@ -37,7 +37,7 @@ class D3Plot extends Component {
     // return false...?
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate() {
     this.props.owner.length && !this.props.commits.isFetching && !this.props.pulls.isFetching ?
     updateFunc(this.props.commits, this.props.pulls) : console.log("PARTIALLY UPDATE")  }
 
