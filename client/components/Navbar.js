@@ -1,5 +1,7 @@
 // EXTERNAL IMPORTS
 import React from 'react'
+import {connect} from 'react-redux'
+import {fetchCommits} from '../store'
 
 // MATERIAL UI IMPORTS
 import PropTypes from 'prop-types'
@@ -8,12 +10,6 @@ import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
-import DateFnsUtils from '@date-io/date-fns'
-import {
-  MuiPickersUtilsProvider,
-  DatePicker,
-  InlineDatePicker
-} from 'material-ui-pickers'
 import Button from '@material-ui/core/Button'
 
 const styles = theme => ({
@@ -48,24 +44,22 @@ const styles = theme => ({
     color: 'inherit',
     letterSpacing: theme.spacing.unit * 1 / 4
   },
+  submit: {
+    marginLeft: theme.spacing.unit * 2
+  },
   resize: {
     padding: '5%',
     fontSize: '12px',
-    width: '10vw'
-  },
-  resizeDate: {
-    padding: '5%',
-    fontSize: '12px',
-    width: '7vw'
+    width: '10vw',
+    fontWeight: 300,
+    letterSpacing: theme.spacing.unit * 1 / 5
   }
 })
 
 class Navbar extends React.Component {
   state = {
     repository: '',
-    owner: '',
-    startDate: new Date(),
-    endDate: new Date()
+    owner: ''
   }
 
   handleChange = name => event => {
@@ -74,8 +68,9 @@ class Navbar extends React.Component {
     })
   }
 
-  handleDateChange = date => {
-    this.setState({startDate: date})
+  handleSubmit = () => {
+    const {repository, owner} = this.state
+    this.props.fetchCommits(owner, repository)
   }
 
   render() {
@@ -124,39 +119,12 @@ class Navbar extends React.Component {
               }}
               variant="outlined"
             />
-            {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <DatePicker
-                  // variant="outlined"
-                  // label="from"
-                  className={classes.textField}
-                  InputProps={{
-                    classes: {
-                      input: classes.resizeDate
-                    }
-                  }}
-                  value={this.state.startDate}
-                  onChange={this.handleDateChange('startDate')}
-                />
-              </MuiPickersUtilsProvider> */}
-
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <InlineDatePicker
-                onlyCalendar
-                disableFuture
-                keyboard
-                format="dd/MM/yyyy"
-                className={classes.textField}
-                InputProps={{
-                  classes: {
-                    input: classes.resizeDate
-                  }
-                }}
-                value={this.state.startDate}
-                onChange={this.handleDateChange}
-              />
-            </MuiPickersUtilsProvider>
-
-            <Button color="inherit" className={classes.navLinkText}>
+            <Button
+              size="small"
+              color="inherit"
+              className={`${classes.submit} ${classes.navLinkText}`}
+              onClick={this.handleSubmit}
+            >
               SUBMIT
             </Button>
           </Toolbar>
@@ -166,8 +134,20 @@ class Navbar extends React.Component {
   }
 }
 
+const mapState = state => {
+  return {}
+}
+
+const mapDispatch = dispatch => {
+  return {
+    fetchCommits: (owner, repo) => {
+      dispatch(fetchCommits(owner, repo))
+    }
+  }
+}
+
 Navbar.propTypes = {
   classes: PropTypes.object.isRequired
 }
 
-export default withStyles(styles)(Navbar)
+export default withStyles(styles)(connect(mapState, mapDispatch)(Navbar))
