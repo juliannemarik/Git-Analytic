@@ -134,12 +134,13 @@ export const createPlot = (node, commits, pulls) => {
 
   // ZOOM FUNCTION
   function zoomed() {
-    console.log("ZOOMING")
-    // console.log('COMMIT CIRCLES', commitCircles)
+    // console.log("ZOOMING")
+    console.log('COMMIT CIRCLES', commitCircles)
     let t = d3.event.transform,
       xt = t.rescaleX(xScale)
     gX.call(xAxis.scale(xt))
     commitCircles.attr('cx', function(d) {
+      // console.log("DATE", d.date)
       return xt(new Date(d.date))
     })
     pullCircles.attr('cx', function(d) {
@@ -155,9 +156,6 @@ export const createPlot = (node, commits, pulls) => {
     updatedPulls = updatedPulls.array
 
     // RE-DEFINE X SCALE
-    console.log('UPDATED COMMITS ---->', updatedCommits)
-    console.log('UPDATED PULLS ---->', updatedPulls)
-
     commitMax = updatedCommits.length
       ? new Date(updatedCommits[0].date)
       : new Date('January 1, 2018')
@@ -177,16 +175,22 @@ export const createPlot = (node, commits, pulls) => {
     xScale.domain([minDate, maxDate])
 
     // MAKE THE CHANGES
-    // plot = d3.select(node).transition();
     plot.select('#axisX').call(xAxis)
-    commitCircles = plot.select("g")
-      .selectAll('circle.commits')
-      .data(updatedCommits)
+    commitCircles = plotGroup.selectAll('circle').data(updatedCommits)
 
-    commitCircles.exit().remove()
-    commitCircles
-      .enter()
-      .append('circle')
+    console.log('UPDATED', commitCircles)
+
+    const enter = commitCircles.enter().append('circle')
+    console.log('ENTER', enter)
+
+    const exit = commitCircles.exit()
+    console.log('EXIT', exit)
+
+    exit
+      .remove()
+
+    commitCircles = commitCircles
+      .merge(enter)
       .attr('cx', function(d, i) {
         return xScale(new Date(d.date))
       })
@@ -194,13 +198,24 @@ export const createPlot = (node, commits, pulls) => {
         return yScale(new Date(d.time))
       })
       .attr('r', '5px')
-      .style('fill', '#0096FF')
+      .style('fill', 'green')
       .style('opacity', 0.5)
       .style('stroke', '#011993')
       .style('stroke-width', '1px')
 
-    // newCommitCircles.transition()
-    //   .duration(500)
+    // const updated = plotGroup
+    //   .selectAll('circle.commits')
+    //   .data(updatedCommits)
+
+    //   updated.remove()
+    //   commitCircles = updated
+    //     .enter()
+    //     .append('circle')
+
+    // updated
+    // .attr('r', '5px')
+    // .style('fill', 'green')
+    // commitCircles
     //   .attr('cx', function(d, i) {
     //     return xScale(new Date(d.date))
     //   })
@@ -212,6 +227,8 @@ export const createPlot = (node, commits, pulls) => {
     //   .style('opacity', 0.5)
     //   .style('stroke', '#011993')
     //   .style('stroke-width', '1px')
+
+    //   updated.merge(commitCircles)
 
     plot
       .select('.pulls')
