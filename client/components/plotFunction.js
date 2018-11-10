@@ -3,7 +3,6 @@ import * as d3 from 'd3'
 // CREATE ORIGINAL PLOT
 // ----------------------
 export const createPlot = (node, commits, pulls) => {
-
   // RE-DEFINE COMMIS & PULLS
   commits = commits.array
   pulls = pulls.array
@@ -21,8 +20,12 @@ export const createPlot = (node, commits, pulls) => {
     .attr('width', width)
 
   // DEFINE TIME X SCALE
-  let commitMax = new Date(commits[0].date)
-  let commitMin = new Date(commits[commits.length - 1].date)
+  let commitMax = commits.length
+    ? new Date(commits[0].date)
+    : new Date('January 1, 2018')
+  let commitMin = commits.length
+    ? new Date(commits[commits.length - 1].date)
+    : new Date('January 1, 2017')
   let pullMax = pulls[0] ? new Date(pulls[0].dateCreated) : commitMax
   let pullMin = pulls[pulls.length - 1]
     ? new Date(pulls[pulls.length - 1].dateCreated)
@@ -75,6 +78,7 @@ export const createPlot = (node, commits, pulls) => {
   // DEFINE PLOT GROUP
   let plotGroup = plot
     .append('g')
+    .attr('class', 'g')
     .attr(
       'transform',
       'translate(' + margins.left + ', ' + margins.top / 2 + ')'
@@ -130,6 +134,8 @@ export const createPlot = (node, commits, pulls) => {
 
   // ZOOM FUNCTION
   function zoomed() {
+    console.log("ZOOMING")
+    // console.log('COMMIT CIRCLES', commitCircles)
     let t = d3.event.transform,
       xt = t.rescaleX(xScale)
     gX.call(xAxis.scale(xt))
@@ -143,19 +149,27 @@ export const createPlot = (node, commits, pulls) => {
 
   // UPDATE EXISTING PLOT
   // ----------------------
-  return function updateMe(updatedCommits, updatedPulls) {
+  return function update(updatedCommits, updatedPulls) {
+    // RE-DEFINE COMMITS & PULLS
+    updatedCommits = updatedCommits.array
+    updatedPulls = updatedPulls.array
+
     // RE-DEFINE X SCALE
     console.log('UPDATED COMMITS ---->', updatedCommits)
     console.log('UPDATED PULLS ---->', updatedPulls)
 
-    commitMax = updatedCommits[0] ? new Date(updatedCommits[0].date) : null
-    commitMin = updatedCommits[updatedCommits.length - 1]
+    commitMax = updatedCommits.length
+      ? new Date(updatedCommits[0].date)
+      : new Date('January 1, 2018')
+    commitMin = updatedCommits.length
       ? new Date(updatedCommits[updatedCommits.length - 1].date)
-      : null
-    pullMax = updatedPulls[0] ? new Date(updatedPulls[0].dateCreated) : null
+      : new Date('January 1, 2017')
+    pullMax = updatedPulls[0]
+      ? new Date(updatedPulls[0].dateCreated)
+      : commitMax
     pullMin = updatedPulls[updatedPulls.length - 1]
       ? new Date(updatedPulls[updatedPulls.length - 1].dateCreated)
-      : null
+      : commitMin
 
     minDate = new Date(Math.min.apply(null, [commitMin, pullMin]))
     maxDate = new Date(Math.max.apply(null, [commitMax, pullMax]))
@@ -164,8 +178,44 @@ export const createPlot = (node, commits, pulls) => {
 
     // MAKE THE CHANGES
     // plot = d3.select(node).transition();
-    plot.select('#axisX').call(xAxis);
-    plot.select('.commits').data(updatedCommits)
-    plot.select('.pulls').data(updatedPulls)
+    plot.select('#axisX').call(xAxis)
+    commitCircles = plot.select("g")
+      .selectAll('circle.commits')
+      .data(updatedCommits)
+
+    commitCircles.exit().remove()
+    commitCircles
+      .enter()
+      .append('circle')
+      .attr('cx', function(d, i) {
+        return xScale(new Date(d.date))
+      })
+      .attr('cy', function(d, i) {
+        return yScale(new Date(d.time))
+      })
+      .attr('r', '5px')
+      .style('fill', '#0096FF')
+      .style('opacity', 0.5)
+      .style('stroke', '#011993')
+      .style('stroke-width', '1px')
+
+    // newCommitCircles.transition()
+    //   .duration(500)
+    //   .attr('cx', function(d, i) {
+    //     return xScale(new Date(d.date))
+    //   })
+    //   .attr('cy', function(d, i) {
+    //     return yScale(new Date(d.time))
+    //   })
+    //   .attr('r', '5px')
+    //   .style('fill', '#0096FF')
+    //   .style('opacity', 0.5)
+    //   .style('stroke', '#011993')
+    //   .style('stroke-width', '1px')
+
+    plot
+      .select('.pulls')
+      .selectAll('circle.commits')
+      .data(updatedPulls)
   }
 }

@@ -27,18 +27,19 @@ class D3Plot extends Component {
   }
 
   componentDidMount() {
-    let {commits, pulls} = this.props
+    this.props.owner.length && !this.props.commits.isFetching && !this.props.pulls.isFetching ?
+    console.log("COMPONENT MOUNTED") : console.log("NOT MOUNTED")
     const node = this.plotRef.current
-    updateFunc = createPlot(node, commits, pulls)
+    updateFunc = createPlot(node, {isFetching: false, array:[]}, {isFetching: false, array:[]})
   }
 
   componentShouldMount() {
     // return false...?
   }
 
-  componentDidUpdate() {
-   console.log("UPDATE FROM D3PLOT")
-  }
+  componentDidUpdate(prevProps) {
+    this.props.owner.length && !this.props.commits.isFetching && !this.props.pulls.isFetching ?
+    updateFunc(this.props.commits, this.props.pulls) : console.log("PARTIALLY UPDATE")  }
 
   render() {
     const {classes} = this.props
@@ -48,6 +49,7 @@ class D3Plot extends Component {
 
 const mapState = state => {
   return {
+    owner: state.repos.owner,
     commits: state.repos.commits,
     pulls: state.repos.pulls
   }

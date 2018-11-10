@@ -30,10 +30,10 @@ class Home extends Component {
   render() {
     const {classes} = this.props
     return (
-      // <D3Plot />
-      <div className={classes.root}>
-        {this.props.owner.length && !this.props.commits.isFetching && !this.props.pulls.isFetching ? <D3Plot /> : <div className={classes.blankPlot}/> }
-      </div>
+      <D3Plot />
+      // <div className={classes.root}>
+      //   {this.props.owner.length && !this.props.commits.isFetching && !this.props.pulls.isFetching ? <D3Plot /> : <div className={classes.blankPlot}/> }
+      // </div>
     )
   }
 }
