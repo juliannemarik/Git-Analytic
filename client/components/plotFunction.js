@@ -18,6 +18,7 @@ export const createPlot = (node, commits, pulls) => {
     .append('svg')
     .attr('height', height)
     .attr('width', width)
+    .attr('class', 'plot')
 
   // DEFINE TIME X SCALE
   let commitMax = commits.length
@@ -36,7 +37,7 @@ export const createPlot = (node, commits, pulls) => {
   let xScale = d3
     .scaleTime()
     .domain([minDate, maxDate])
-    .range([0, width - 2 * margins.right])
+    .range([0, width - 2.2 * margins.right])
 
   // DEFINE TIME Y SCALE
   const minTime = new Date('January 1, 2000, 01:00:0')
@@ -44,7 +45,7 @@ export const createPlot = (node, commits, pulls) => {
   let yScale = d3
     .scaleTime()
     .domain([minTime, maxTime])
-    .range([height - margins.top, 0])
+    .range([height - 1.1 * margins.top, 0])
 
   // DEFINE AXES
   let xAxis = d3
@@ -53,7 +54,7 @@ export const createPlot = (node, commits, pulls) => {
     .tickSize(10)
 
   let yAxis = d3
-    .axisLeft(yScale)
+    .axisRight(yScale)
     .tickPadding(10)
     .tickSize(10)
     .ticks(d3.timeHour)
@@ -74,6 +75,10 @@ export const createPlot = (node, commits, pulls) => {
     .append('rect')
     .attr('width', width - margins.left - margins.right)
     .attr('height', height - margins.top)
+    .attr(
+      'transform',
+      'translate(' + margins.left + ', ' + margins.top / 2 + ')'
+    )
 
   // DEFINE PLOT GROUP
   let plotGroup = plot
@@ -92,7 +97,7 @@ export const createPlot = (node, commits, pulls) => {
     .attr('id', 'axisX')
     .call(xAxis)
 
-  let commitCircles = plotGroup
+  let commitCircles = plot
     .selectAll('circle.commits')
     .data(commits)
     .enter()
@@ -134,13 +139,10 @@ export const createPlot = (node, commits, pulls) => {
 
   // ZOOM FUNCTION
   function zoomed() {
-    // console.log("ZOOMING")
-    console.log('COMMIT CIRCLES', commitCircles)
     let t = d3.event.transform,
       xt = t.rescaleX(xScale)
     gX.call(xAxis.scale(xt))
     commitCircles.attr('cx', function(d) {
-      // console.log("DATE", d.date)
       return xt(new Date(d.date))
     })
     pullCircles.attr('cx', function(d) {
@@ -177,17 +179,12 @@ export const createPlot = (node, commits, pulls) => {
     // MAKE THE CHANGES
     plot.select('#axisX').call(xAxis)
     commitCircles = plotGroup.selectAll('circle').data(updatedCommits)
-
-    console.log('UPDATED', commitCircles)
+    pullCircles = plotGroup.select('circle.pulls').data(updatedPulls)
 
     const enter = commitCircles.enter().append('circle')
-    console.log('ENTER', enter)
+    const enterPulls = pullCircles.enter().append('circle')
 
-    const exit = commitCircles.exit()
-    console.log('EXIT', exit)
-
-    exit
-      .remove()
+    const exit = commitCircles.exit().remove()
 
     commitCircles = commitCircles
       .merge(enter)
@@ -198,41 +195,23 @@ export const createPlot = (node, commits, pulls) => {
         return yScale(new Date(d.time))
       })
       .attr('r', '5px')
-      .style('fill', 'green')
+      .style('fill', '#0096FF')
       .style('opacity', 0.5)
       .style('stroke', '#011993')
       .style('stroke-width', '1px')
 
-    // const updated = plotGroup
-    //   .selectAll('circle.commits')
-    //   .data(updatedCommits)
-
-    //   updated.remove()
-    //   commitCircles = updated
-    //     .enter()
-    //     .append('circle')
-
-    // updated
-    // .attr('r', '5px')
-    // .style('fill', 'green')
-    // commitCircles
-    //   .attr('cx', function(d, i) {
-    //     return xScale(new Date(d.date))
-    //   })
-    //   .attr('cy', function(d, i) {
-    //     return yScale(new Date(d.time))
-    //   })
-    //   .attr('r', '5px')
-    //   .style('fill', '#0096FF')
-    //   .style('opacity', 0.5)
-    //   .style('stroke', '#011993')
-    //   .style('stroke-width', '1px')
-
-    //   updated.merge(commitCircles)
-
-    plot
-      .select('.pulls')
-      .selectAll('circle.commits')
-      .data(updatedPulls)
+    pullCircles = pullCircles
+      .merge(enter)
+      .attr('cx', function(d, i) {
+        return xScale(new Date(d.date))
+      })
+      .attr('cy', function(d, i) {
+        return yScale(new Date(d.time))
+      })
+      .attr('r', '5px')
+      .style('fill', '#FFB20E')
+      .style('opacity', 0.5)
+      .style('stroke', '#E8750B')
+      .style('stroke-width', '1px')
   }
 }

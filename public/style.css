@@ -26,13 +26,22 @@ form div {
   display: inline-block;
 }
 
-#axisY .tick:nth-child(2n) text {
-  visibility: hidden;
-}
 #axisY .tick:nth-child(2n) line {
   visibility: hidden;
 }
+#axisY .tick:nth-child(2n) text {
+  visibility: hidden;
+}
 
-.commits{
+/* #axisX .tick:last-child text {
+  visibility: hidden;
+}
+#axisX .tick:nth-child(2) text {
+  visibility: hidden;
+} */
+
+
+
+.plot {
   clip-path: url(#clip);
 }
