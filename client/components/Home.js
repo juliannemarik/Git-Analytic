@@ -1,7 +1,6 @@
 // EXTERNAL IMPORTS
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import {fetchCommits} from '../store'
 
 // INTERNAL IMPORTS
 import D3Plot from './D3Plot'
@@ -30,20 +29,15 @@ class Home extends Component {
   render() {
     const {classes} = this.props
     return (
-      <D3Plot />
-      // <div className={classes.root}>
-      //   {this.props.owner.length && !this.props.commits.isFetching && !this.props.pulls.isFetching ? <D3Plot /> : <div className={classes.blankPlot}/> }
-      // </div>
+      <div className={classes.root}>
+        <D3Plot />
+      </div>
     )
   }
 }
 
 const mapState = state => {
-  return {
-    owner: state.repos.owner,
-    commits: state.repos.commits,
-    pulls: state.repos.pulls
-  }
+  return {}
 }
 
 export default withStyles(styles)(connect(mapState)(Home))

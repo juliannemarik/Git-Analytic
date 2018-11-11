@@ -1,11 +1,13 @@
 // EXTERNAL IMPORTS
 import React from 'react'
+import {connect} from 'react-redux'
+import {fetchCommitsByDate, fetchPullsByDate} from '../store'
+const dateFormat = require('dateformat');
 
 // MATERIAL UI IMPORTS
 import PropTypes from 'prop-types'
 import {withStyles} from '@material-ui/core/styles'
 import BottomNavigation from '@material-ui/core/BottomNavigation'
-import BottomNavigationAction from '@material-ui/core/BottomNavigationAction'
 import DateFnsUtils from '@date-io/date-fns'
 import {MuiPickersUtilsProvider, InlineDatePicker} from 'material-ui-pickers'
 
@@ -41,13 +43,19 @@ const styles = theme => ({
 
 class BottomNavbar extends React.Component {
   state = {
-    startDate: new Date(),
-    endDate: new Date(),
+    startDate: dateFormat(new Date(), "isoUtcDateTime"),
+    endDate: dateFormat(new Date(), "isoUtcDateTime"),
   }
 
-  handleDateChange = dateType => date => {
-    console.log("CHANGED")
-    this.setState({[dateType]: date})
+  handleDateChange = dateType => async date => {
+    await this.setState({[dateType]: dateFormat(date, "isoUtcDateTime")})
+    console.log("NEW STATE", this.state)
+    const {commits, pulls, owner, repository} = this.props
+    let {startDate, endDate} = this.state
+
+    console.log("START", startDate, "END", endDate)
+    this.props.fetchCommitsByDate(owner, repository, startDate, endDate, commits)
+    this.props.fetchPullsByDate(owner, repository, startDate, endDate, pulls)
   }
 
   render() {
@@ -98,10 +106,28 @@ class BottomNavbar extends React.Component {
   }
 }
 
-
-
 BottomNavbar.propTypes = {
   classes: PropTypes.object.isRequired
 }
 
-export default withStyles(styles)(BottomNavbar)
+const mapState = state => {
+  return {
+    owner: state.repos.owner,
+    repository: state.repos.repository,
+    commits: state.repos.commits,
+    pulls: state.repos.pulls
+  }
+}
+
+const mapDispatch = dispatch => {
+  return {
+    fetchCommitsByDate: (owner, repo, since, until, commits) => {
+      dispatch(fetchCommitsByDate(owner, repo, since, until, commits))
+    },
+    fetchPullsByDate: (owner, repo, since, until, pulls) => {
+      dispatch(fetchPullsByDate(owner, repo, since, until, pulls))
+    }
+  }
+}
+
+export default withStyles(styles)(connect(mapState, mapDispatch)(BottomNavbar))

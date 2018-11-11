@@ -70,10 +70,11 @@ class Navbar extends React.Component {
 
   handleSubmit = () => {
       const {repository, owner} = this.state
-      this.props.setOwner(this.state.owner)
-      this.props.setRepository(this.state.repository)
-      this.props.fetchCommits(owner, repository, this.props.commits)
-      this.props.fetchPulls(owner, repository, this.props.pulls)
+      const {commits, pulls} = this.props
+      this.props.setOwner(owner)
+      this.props.setRepository(repository)
+      this.props.fetchCommits(owner, repository, commits)
+      this.props.fetchPulls(owner, repository, pulls)
   }
 
   render() {
@@ -144,7 +145,7 @@ const mapState = state => {
   }
 }
 
-const mapDispatch = (dispatch, state) => {
+const mapDispatch = dispatch => {
   return {
     setOwner: (owner) => {
       dispatch(setOwner(owner))

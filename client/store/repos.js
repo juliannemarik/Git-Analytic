@@ -3,7 +3,7 @@ import axios from 'axios'
 // ACTION TYPES
 const SET_OWNER = 'SET_OWNER'
 const SET_REPOSITORY = 'SET_REPOSITORY'
-const SET_COMMITS = 'GET_COMMITS'
+const SET_COMMITS = 'SET_COMMITS'
 const SET_PULLS = 'SET_PULLS'
 
 // INITIAL STATE
@@ -29,12 +29,6 @@ const setPulls = pulls => ({type: SET_PULLS, pulls})
 // THUNK CREATORS
 export const fetchCommits = (owner, repo, commitObj) => async dispatch => {
   try {
-    // if (Object.keys(state).includes('repos')) {
-    //   console.log('STATE', state)
-    //   state.repos.commits.isFetching = true
-    // } else {
-    //   initialState.commits.isFetching = true
-    // }
     commitObj.isFetching = true
     const {data: commits} = await axios.get(
       `api/repos/${owner}/${repo}/commits`
@@ -44,13 +38,9 @@ export const fetchCommits = (owner, repo, commitObj) => async dispatch => {
     console.error(err)
   }
 }
-export const fetchCommitsByDate = (
-  owner,
-  repo,
-  since,
-  until
-) => async dispatch => {
+export const fetchCommitsByDate = (owner, repo, since, until, commitObj) => async dispatch => {
   try {
+    commitObj.isFetching = true
     const {data: commits} = await axios.get(
       `api/repos/${owner}/${repo}/commits/${since}/${until}`
     )
@@ -61,14 +51,20 @@ export const fetchCommitsByDate = (
 }
 export const fetchPulls = (owner, repo, pullObj) => async dispatch => {
   try {
-    // if (Object.keys(state).includes('repos')) {
-    //   state.repos.commits.isFetching = true
-    // } else {
-    //   initialState.commits.isFetching = true
-    // }
     pullObj.isFetching = true
-
     const {data: pulls} = await axios.get(`api/repos/${owner}/${repo}/pulls`)
+    dispatch(setPulls(pulls))
+  } catch (err) {
+    console.error(err)
+  }
+}
+export const fetchPullsByDate = (owner, repo, since, until, pullObj) => async dispatch => {
+  try {
+    console.log("IN THUNK")
+    pullObj.isFetching = true
+    const {data: pulls} = await axios.get(
+      `api/repos/${owner}/${repo}/pulls/${since}/${until}`
+    )
     dispatch(setPulls(pulls))
   } catch (err) {
     console.error(err)
