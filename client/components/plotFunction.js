@@ -1,7 +1,6 @@
 import * as d3 from 'd3'
 import {xDomainFunc, yDomainFunc} from './helperFunctions'
-import d3Tip from 'd3-tip'
-
+import React from 'react'
 
 // CREATE ORIGINAL PLOT
 // ----------------------
@@ -107,7 +106,6 @@ export const createPlot = (node, commits, pulls) => {
     .style('stroke', '#011993')
     .style('stroke-width', '1px')
 
-
   // CREATE CIRCLES - PULLS
   let pullCircles = plotGroup
     .selectAll('circle.pulls')
@@ -157,25 +155,30 @@ export const createPlot = (node, commits, pulls) => {
     // MAKE CHANGES TO CIRCLES
     plot.select('#axisX').call(xAxis)
 
-    commitCircles = plotGroup.selectAll('circle').data(updatedCommits)
+    commitCircles = plotGroup.selectAll('circle.commits').data(updatedCommits)
     pullCircles = plotGroup.selectAll('circle.pulls').data(updatedPulls)
 
+    // ENTER & EXIT CIRCLES
     const enter = commitCircles
       .enter()
       .append('circle')
+      .attr('class', 'commits')
       .style('fill', 'white')
       .style('opacity', 0)
     const enterPulls = pullCircles
       .enter()
       .append('circle')
-      .style('fill', 'white')
-      .style('opacity', 0)
+      .attr('class', 'pulls')
+      .style('fill', 'blue')
+      .style('opacity', 1)
     commitCircles.exit().remove()
+    pullCircles.exit().remove()
 
+    // MERGE CIRCLES
     commitCircles = commitCircles
       .merge(enter)
-      // .transition()
-      // .duration(1000)
+      .transition()
+      .duration(500)
       .attr('cx', function(d, i) {
         return xScale(new Date(d.date))
       })
@@ -187,15 +190,21 @@ export const createPlot = (node, commits, pulls) => {
       .style('opacity', 0.5)
       .style('stroke', '#011993')
       .style('stroke-width', '1px')
-      .on('mouseover', () => {console.log('MOUSE OVER')})
+      // .on('mouseover', handleMouseOver)
+      // .on('mouseout', handleMouseOut)
 
+      commitCircles = plotGroup.selectAll('circle.commits')
 
-
+    // // DEFINE DIV
+    // var div = plot
+    //   .append('div')
+    //   .attr('class', 'tooltip')
+    //   .style('opacity', 0)
 
     pullCircles = pullCircles
       .merge(enterPulls)
-      // .transition()
-      // .duration(1000)
+      .transition()
+      .duration(500)
       .attr('cx', function(d, i) {
         return xScale(new Date(d.dateCreated))
       })
@@ -207,6 +216,8 @@ export const createPlot = (node, commits, pulls) => {
       .style('opacity', 0.5)
       .style('stroke', '#E8750B')
       .style('stroke-width', '1px')
+
+      pullCircles = plotGroup.selectAll('circle.pulls')
 
   }
 }
