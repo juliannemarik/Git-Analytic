@@ -1,7 +1,7 @@
 // EXTERNAL IMPORTS
 import React from 'react'
 import {connect} from 'react-redux'
-import {fetchCommitsByDate, fetchPullsByDate} from '../store'
+import {fetchCommits, fetchPulls, fetchCommitsByDate, fetchPullsByDate, clearCommits, clearPulls} from '../store'
 const dateFormat = require('dateformat')
 
 // MATERIAL UI IMPORTS
@@ -85,24 +85,31 @@ const styles = theme => ({
 class BottomNavbar extends React.Component {
   state = {
     startDate: dateFormat(new Date(), 'isoUtcDateTime'),
-    endDate: dateFormat(new Date(), 'isoUtcDateTime')
+    endDate: dateFormat(new Date(), 'isoUtcDateTime'),
+    display: 'all'
   }
 
   handleDateChange = dateType => async date => {
     await this.setState({[dateType]: dateFormat(date, 'isoUtcDateTime')})
-    console.log('NEW STATE', this.state)
     const {commits, pulls, owner, repository} = this.props
     let {startDate, endDate} = this.state
-
-    console.log('START', startDate, 'END', endDate)
-    this.props.fetchCommitsByDate(
-      owner,
-      repository,
-      startDate,
-      endDate,
-      commits
-    )
+    this.props.fetchCommitsByDate(owner, repository, startDate, endDate, commits)
     this.props.fetchPullsByDate(owner, repository, startDate, endDate, pulls)
+  }
+
+  handleDisplayChange = event => {
+    this.setState({display: event.target.value})
+    const {owner, repository, commits, pulls} = this.props
+    if(event.target.value === 'all'){
+      this.props.fetchCommits(owner, repository, commits)
+      this.props.fetchPulls(owner, repository, pulls)
+    } else if(event.target.value === 'commits'){
+      this.props.clearPulls()
+      this.props.fetchCommits(owner, repository, commits)
+    } else if (event.target.value === 'pulls'){
+      this.props.clearCommits()
+      this.props.fetchPulls(owner, repository, pulls)
+    }
   }
 
   render() {
@@ -116,8 +123,8 @@ class BottomNavbar extends React.Component {
                 aria-label="Gender"
                 name="gender1"
                 className={classes.radioGroup}
-                // value={trainDisplay}
-                // onChange={this.handleChange}
+                value={this.state.display}
+                onChange={this.handleDisplayChange}
               >
                 <FormControlLabel
                 value="all"
@@ -125,11 +132,11 @@ class BottomNavbar extends React.Component {
                 label={<Typography className={classes.radioText}>ALL</Typography>}
                 />
                 <FormControlLabel
-                  value="redLine"
+                  value="commits"
                   control={<Radio />}
                   label={<Typography className={classes.radioText}>COMMITS</Typography>}                />
                 <FormControlLabel
-                  value="blueLine"
+                  value="pulls"
                   control={<Radio />}
                   label={<Typography className={classes.radioText}>PULL REQUESTS</Typography>}                />
               </RadioGroup>
@@ -223,6 +230,18 @@ const mapDispatch = dispatch => {
     },
     fetchPullsByDate: (owner, repo, since, until, pulls) => {
       dispatch(fetchPullsByDate(owner, repo, since, until, pulls))
+    },
+    clearCommits: () => {
+      dispatch(clearCommits())
+    },
+    clearPulls: () => {
+      dispatch(clearPulls())
+    },
+    fetchCommits: (owner, repo, commits) => {
+      dispatch(fetchCommits(owner, repo, commits))
+    },
+    fetchPulls: (owner, repo, pulls) => {
+      dispatch(fetchPulls(owner, repo, pulls))
     }
   }
 }

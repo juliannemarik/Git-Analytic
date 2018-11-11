@@ -5,6 +5,8 @@ const SET_OWNER = 'SET_OWNER'
 const SET_REPOSITORY = 'SET_REPOSITORY'
 const SET_COMMITS = 'SET_COMMITS'
 const SET_PULLS = 'SET_PULLS'
+const CLEAR_COMMITS = 'CLEAR_COMMITS'
+const CLEAR_PULLS = 'CLEAR_PULLS'
 
 // INITIAL STATE
 const initialState = {
@@ -25,6 +27,9 @@ export const setOwner = owner => ({type: SET_OWNER, owner})
 export const setRepository = repository => ({type: SET_REPOSITORY, repository})
 const setCommits = commits => ({type: SET_COMMITS, commits})
 const setPulls = pulls => ({type: SET_PULLS, pulls})
+export const clearCommits = () => ({type: CLEAR_COMMITS})
+export const clearPulls = () => ({type: CLEAR_PULLS})
+
 
 // THUNK CREATORS
 export const fetchCommits = (owner, repo, commitObj) => async dispatch => {
@@ -83,6 +88,12 @@ const handlers = {
   },
   [SET_PULLS]: (state, action) => {
     return {...state, pulls: {isFetching: false, array: action.pulls}}
+  },
+  [CLEAR_COMMITS]: (state, action) => {
+    return {...state, commits: {isFetching: false, array: []}}
+  },
+  [CLEAR_PULLS]: (state, action) => {
+    return {...state, pulls: {isFetching: false, array: []}}
   }
 }
 
