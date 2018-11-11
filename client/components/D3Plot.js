@@ -1,7 +1,5 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-// import commitData from './data.commits.json'
-// import pullData from './data.pulls.json'
 import {createPlot} from './plotFunction'
 
 import * as d3 from 'd3'
@@ -31,10 +29,6 @@ class D3Plot extends Component {
     console.log("COMPONENT MOUNTED") : console.log("NOT MOUNTED")
     const node = this.plotRef.current
     updateFunc = createPlot(node, {isFetching: false, array:[]}, {isFetching: false, array:[]})
-  }
-
-  componentShouldMount() {
-    // return false...?
   }
 
   componentDidUpdate() {

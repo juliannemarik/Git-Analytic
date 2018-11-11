@@ -1,7 +1,7 @@
 // EXTERNAL IMPORTS
 import React from 'react'
 import {connect} from 'react-redux'
-import {fetchCommits, fetchPulls, fetchCommitsByDate, fetchPullsByDate, clearCommits, clearPulls} from '../store'
+import {fetchCommitsByDate, fetchPullsByDate, toggleCommits, togglePulls, resetDataVisibility} from '../store'
 const dateFormat = require('dateformat')
 
 // MATERIAL UI IMPORTS
@@ -101,21 +101,19 @@ class BottomNavbar extends React.Component {
 
   handleDisplayChange = event => {
     this.setState({display: event.target.value})
-    const {owner, repository, commits, pulls} = this.props
     if(event.target.value === 'all'){
-      this.props.fetchCommits(owner, repository, commits)
-      this.props.fetchPulls(owner, repository, pulls)
+      this.props.resetDataVisibility()
     } else if(event.target.value === 'commits'){
-      this.props.clearPulls()
-      this.props.fetchCommits(owner, repository, commits)
+      this.props.togglePulls(false)
+      this.props.toggleCommits(true)
     } else if (event.target.value === 'pulls'){
-      this.props.clearCommits()
-      this.props.fetchPulls(owner, repository, pulls)
+      this.props.toggleCommits(false)
+      this.props.togglePulls(true)
     }
   }
 
   render() {
-    const {classes} = this.props
+    const {classes, contributors} = this.props
     return (
       <div className={classes.root}>
         <AppBar position="fixed" color="default" className={classes.appBar}>
@@ -163,9 +161,9 @@ class BottomNavbar extends React.Component {
                 margin="normal"
               >
                 <option>CONTRIBUTORS</option>
-                {[1, 2, 3, 4].map(option => (
-                  <option key={option} value={option}>
-                    {option}
+                {contributors.array.map(contributor => (
+                  <option key={contributor.login} value={contributor.login}>
+                    {contributor.login}
                   </option>
                 ))}
               </TextField>
@@ -221,7 +219,8 @@ const mapState = state => {
     owner: state.repos.owner,
     repository: state.repos.repository,
     commits: state.repos.commits,
-    pulls: state.repos.pulls
+    pulls: state.repos.pulls,
+    contributors: state.repos.contributors
   }
 }
 
@@ -233,17 +232,14 @@ const mapDispatch = dispatch => {
     fetchPullsByDate: (owner, repo, since, until, pulls) => {
       dispatch(fetchPullsByDate(owner, repo, since, until, pulls))
     },
-    clearCommits: () => {
-      dispatch(clearCommits())
+    toggleCommits: (visibility) => {
+      dispatch(toggleCommits(visibility))
     },
-    clearPulls: () => {
-      dispatch(clearPulls())
+    togglePulls: (visibility) => {
+      dispatch(togglePulls(visibility))
     },
-    fetchCommits: (owner, repo, commits) => {
-      dispatch(fetchCommits(owner, repo, commits))
-    },
-    fetchPulls: (owner, repo, pulls) => {
-      dispatch(fetchPulls(owner, repo, pulls))
+    resetDataVisibility: () => {
+      dispatch(resetDataVisibility())
     }
   }
 }

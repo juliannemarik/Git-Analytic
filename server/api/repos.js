@@ -9,12 +9,24 @@ const clientId = process.env.GITHUB_CLIENT_ID
 const clientSecret = process.env.GITHUB_CLIENT_SECRET
 
 // PRE-DEFINE HELPER FUNCTIONS
+let contributorFilter
 let pullFilter
 let dateFilter
 let commitFilter
 
 // ALL CONTRIBUTORS TO A REPOSITORY
-
+router.get('/:owner/:repo/stats/contributors', async(req, res, next) => {
+  try {
+    const owner = req.params.owner
+    const repo = req.params.repo
+    const url = `https://api.github.com/repos/${owner}/${repo}/stats/contributors?client_id=${clientId}&&client_secret=${clientSecret}`
+    const {data: contributors} = await axios.get(url)
+    const filteredContributors = contributorFilter(contributors)
+    res.json(filteredContributors)
+  } catch (err) {
+    next(err)
+  }
+})
 
 
 // ALL COMMITS FROM A REPOSITORY
@@ -118,6 +130,18 @@ router.get('/:owner/:repo/pulls/:since/:until', async (req, res, next) => {
 
 // -------------------------------------------------------------------------
 // ROUTE HELPER FUNCTIONS
+
+// 0. FILTER NECESSARY DATA FROM CONTRIBUTORS
+contributorFilter = data => {
+  const filteredContributors = []
+  data.forEach(contributor => {
+    filteredContributors.push({
+      totalCommits: contributor.total,
+      login: contributor.author.login
+    })
+  })
+  return filteredContributors
+}
 
 // 1. FILTER NECESSARY DATA FROM COMMITS
 commitFilter = data => {
