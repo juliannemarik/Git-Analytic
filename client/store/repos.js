@@ -60,7 +60,6 @@ export const fetchPulls = (owner, repo, pullObj) => async dispatch => {
 }
 export const fetchPullsByDate = (owner, repo, since, until, pullObj) => async dispatch => {
   try {
-    console.log("IN THUNK")
     pullObj.isFetching = true
     const {data: pulls} = await axios.get(
       `api/repos/${owner}/${repo}/pulls/${since}/${until}`
