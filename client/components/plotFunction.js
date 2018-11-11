@@ -179,16 +179,22 @@ export const createPlot = (node, commits, pulls) => {
     // MAKE THE CHANGES
     plot.select('#axisX').call(xAxis)
     commitCircles = plotGroup.selectAll('circle').data(updatedCommits)
-
-    console.log("UPDATED PULLS", updatedPulls)
     pullCircles = plotGroup.selectAll('circle.pulls').data(updatedPulls)
 
-    const enter = commitCircles.enter().append('circle')
-    const enterPulls = pullCircles.enter().append('circle')
+    const enter = commitCircles.enter()
+      .append('circle')
+      .style('fill', 'white')
+      .style('opacity', 0)
+    const enterPulls = pullCircles.enter()
+      .append('circle')
+      .style('fill', 'white')
+      .style('opacity', 0)
     commitCircles.exit().remove()
 
     commitCircles = commitCircles
       .merge(enter)
+      .transition()
+      .duration(1000)
       .attr('cx', function(d, i) {
         return xScale(new Date(d.date))
       })
@@ -203,6 +209,8 @@ export const createPlot = (node, commits, pulls) => {
 
     pullCircles = pullCircles
       .merge(enterPulls)
+      .transition()
+      .duration(1000)
       .attr('cx', function(d, i) {
         return xScale(new Date(d.dateCreated))
       })
