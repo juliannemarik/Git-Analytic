@@ -185,8 +185,7 @@ export const createPlot = (node, commits, pulls) => {
 
     const enter = commitCircles.enter().append('circle')
     const enterPulls = pullCircles.enter().append('circle')
-
-    const exit = commitCircles.exit().remove()
+    commitCircles.exit().remove()
 
     commitCircles = commitCircles
       .merge(enter)
