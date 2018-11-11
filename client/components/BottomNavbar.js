@@ -46,11 +46,13 @@ const styles = theme => ({
   resizeDate: {
     padding: '5%',
     fontSize: '12px',
-    width: '8vw',
+    width: '7vw',
     fontWeight: 300,
     color: 'inherit',
     letterSpacing: theme.spacing.unit * 1 / 4
-
+  },
+  contributors: {
+    width:'9vw'
   },
   appBar: {
     top: 'auto',
@@ -155,12 +157,12 @@ class BottomNavbar extends React.Component {
                 }}
                 InputProps={{
                   classes: {
-                    input: classes.resizeDate
+                    input: `${classes.resizeDate} ${classes.contributors}`
                   }
                 }}
                 margin="normal"
               >
-                <option>contributors</option>
+                <option>CONTRIBUTORS</option>
                 {[1, 2, 3, 4].map(option => (
                   <option key={option} value={option}>
                     {option}
