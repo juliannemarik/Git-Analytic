@@ -1,4 +1,6 @@
 import * as d3 from 'd3'
+import {xDomainFunc, yDomainFunc} from './helperFunctions'
+import React from 'react'
 
 // CREATE ORIGINAL PLOT
 // ----------------------
@@ -11,6 +13,7 @@ export const createPlot = (node, commits, pulls) => {
   const margins = {left: 50, right: 50, top: 40, bottom: 0}
   const width = window.innerWidth - margins.right - margins.left
   const height = window.innerHeight - 2 * 64 - margins.top
+  let circleRadius = '5px'
 
   // DEFINE SVG ELEMENT
   let plot = d3
@@ -21,30 +24,17 @@ export const createPlot = (node, commits, pulls) => {
     .attr('class', 'plot')
 
   // DEFINE TIME X SCALE
-  let commitMax = commits.length
-    ? new Date(commits[0].date)
-    : new Date('January 1, 2018')
-  let commitMin = commits.length
-    ? new Date(commits[commits.length - 1].date)
-    : new Date('January 1, 2017')
-  let pullMax = pulls[0] ? new Date(pulls[0].dateCreated) : commitMax
-  let pullMin = pulls[pulls.length - 1]
-    ? new Date(pulls[pulls.length - 1].dateCreated)
-    : commitMin
-
-  let minDate = new Date(Math.min.apply(null, [commitMin, pullMin]))
-  let maxDate = new Date(Math.max.apply(null, [commitMax, pullMax]))
+  let xDomain = xDomainFunc(commits, pulls)
   let xScale = d3
     .scaleTime()
-    .domain([minDate, maxDate])
+    .domain(xDomain)
     .range([0, width - 2.2 * margins.right])
 
   // DEFINE TIME Y SCALE
-  const minTime = new Date('January 1, 2000, 01:00:0')
-  const maxTime = new Date('January 1, 2000, 23:59:59')
+  let yDomain = yDomainFunc()
   let yScale = d3
     .scaleTime()
-    .domain([minTime, maxTime])
+    .domain(yDomain)
     .range([height - 1.1 * margins.top, 0])
 
   // DEFINE AXES
@@ -97,7 +87,8 @@ export const createPlot = (node, commits, pulls) => {
     .attr('id', 'axisX')
     .call(xAxis)
 
-  let commitCircles = plot
+  // CREATE CIRCLES - PULLS
+  let commitCircles = plotGroup
     .selectAll('circle.commits')
     .data(commits)
     .enter()
@@ -109,7 +100,7 @@ export const createPlot = (node, commits, pulls) => {
     .attr('cy', function(d, i) {
       return yScale(new Date(d.time))
     })
-    .attr('r', '5px')
+    .attr('r', circleRadius)
     .style('fill', '#0096FF')
     .style('opacity', 0.5)
     .style('stroke', '#011993')
@@ -128,7 +119,7 @@ export const createPlot = (node, commits, pulls) => {
     .attr('cy', function(d, i) {
       return yScale(new Date(d.timeCreated))
     })
-    .attr('r', '5px')
+    .attr('r', circleRadius)
     .style('fill', '#FFB20E')
     .style('opacity', 0.5)
     .style('stroke', '#E8750B')
@@ -157,62 +148,76 @@ export const createPlot = (node, commits, pulls) => {
     updatedCommits = updatedCommits.array
     updatedPulls = updatedPulls.array
 
-    // RE-DEFINE X SCALE
-    commitMax = updatedCommits.length
-      ? new Date(updatedCommits[0].date)
-      : new Date('January 1, 2018')
-    commitMin = updatedCommits.length
-      ? new Date(updatedCommits[updatedCommits.length - 1].date)
-      : new Date('January 1, 2017')
-    pullMax = updatedPulls[0]
-      ? new Date(updatedPulls[0].dateCreated)
-      : commitMax
-    pullMin = updatedPulls[updatedPulls.length - 1]
-      ? new Date(updatedPulls[updatedPulls.length - 1].dateCreated)
-      : commitMin
+    // RE-DEFINE X-DOMAIN
+    xDomain = xDomainFunc(updatedCommits, updatedPulls)
+    xScale.domain(xDomain)
 
-    minDate = new Date(Math.min.apply(null, [commitMin, pullMin]))
-    maxDate = new Date(Math.max.apply(null, [commitMax, pullMax]))
-
-    xScale.domain([minDate, maxDate])
-
-    // MAKE THE CHANGES
+    // MAKE CHANGES TO CIRCLES
     plot.select('#axisX').call(xAxis)
-    commitCircles = plotGroup.selectAll('circle').data(updatedCommits)
 
-    console.log("UPDATED PULLS", updatedPulls)
+    commitCircles = plotGroup.selectAll('circle.commits').data(updatedCommits)
     pullCircles = plotGroup.selectAll('circle.pulls').data(updatedPulls)
 
-    const enter = commitCircles.enter().append('circle')
-    const enterPulls = pullCircles.enter().append('circle')
+    // ENTER & EXIT CIRCLES
+    const enter = commitCircles
+      .enter()
+      .append('circle')
+      .attr('class', 'commits')
+      .style('fill', 'white')
+      .style('opacity', 0)
+    const enterPulls = pullCircles
+      .enter()
+      .append('circle')
+      .attr('class', 'pulls')
+      .style('fill', 'blue')
+      .style('opacity', 1)
     commitCircles.exit().remove()
+    pullCircles.exit().remove()
 
+    // MERGE CIRCLES
     commitCircles = commitCircles
       .merge(enter)
+      .transition()
+      .duration(500)
       .attr('cx', function(d, i) {
         return xScale(new Date(d.date))
       })
       .attr('cy', function(d, i) {
         return yScale(new Date(d.time))
       })
-      .attr('r', '5px')
+      .attr('r', circleRadius)
       .style('fill', '#0096FF')
       .style('opacity', 0.5)
       .style('stroke', '#011993')
       .style('stroke-width', '1px')
+      // .on('mouseover', handleMouseOver)
+      // .on('mouseout', handleMouseOut)
+
+      commitCircles = plotGroup.selectAll('circle.commits')
+
+    // // DEFINE DIV
+    // var div = plot
+    //   .append('div')
+    //   .attr('class', 'tooltip')
+    //   .style('opacity', 0)
 
     pullCircles = pullCircles
       .merge(enterPulls)
+      .transition()
+      .duration(500)
       .attr('cx', function(d, i) {
         return xScale(new Date(d.dateCreated))
       })
       .attr('cy', function(d, i) {
         return yScale(new Date(d.timeCreated))
       })
-      .attr('r', '5px')
+      .attr('r', circleRadius)
       .style('fill', '#FFB20E')
       .style('opacity', 0.5)
       .style('stroke', '#E8750B')
       .style('stroke-width', '1px')
+
+      pullCircles = plotGroup.selectAll('circle.pulls')
+
   }
 }
