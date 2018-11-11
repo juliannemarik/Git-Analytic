@@ -30,16 +30,17 @@ class Home extends Component {
   render() {
     const {classes} = this.props
     return (
-      // <D3Plot />
-      <div className={classes.root}>
-        {this.props.commits.length && this.props.pulls.length ? <D3Plot /> : <div className={classes.blankPlot}/> }
-      </div>
+      <D3Plot />
+      // <div className={classes.root}>
+      //   {this.props.owner.length && !this.props.commits.isFetching && !this.props.pulls.isFetching ? <D3Plot /> : <div className={classes.blankPlot}/> }
+      // </div>
     )
   }
 }
 
 const mapState = state => {
   return {
+    owner: state.repos.owner,
     commits: state.repos.commits,
     pulls: state.repos.pulls
   }

@@ -10,8 +10,14 @@ const SET_PULLS = 'SET_PULLS'
 const initialState = {
   owner: '',
   repository: '',
-  commits: [],
-  pulls: []
+  commits: {
+    isFetching: false,
+    array: []
+  },
+  pulls: {
+    isFetching: false,
+    array: []
+  }
 }
 
 // ACTION CREATORS
@@ -21,28 +27,51 @@ const setCommits = commits => ({type: SET_COMMITS, commits})
 const setPulls = pulls => ({type: SET_PULLS, pulls})
 
 // THUNK CREATORS
-export const fetchCommits = (owner, repo) => async dispatch => {
+export const fetchCommits = (owner, repo, commitObj) => async dispatch => {
   try {
-    const {data: commits} = await axios.get(`api/repos/${owner}/${repo}/commits`)
+    // if (Object.keys(state).includes('repos')) {
+    //   console.log('STATE', state)
+    //   state.repos.commits.isFetching = true
+    // } else {
+    //   initialState.commits.isFetching = true
+    // }
+    commitObj.isFetching = true
+    const {data: commits} = await axios.get(
+      `api/repos/${owner}/${repo}/commits`
+    )
     dispatch(setCommits(commits))
   } catch (err) {
     console.error(err)
   }
 }
-export const fetchCommitsByDate = (owner, repo, since, until) => async dispatch => {
+export const fetchCommitsByDate = (
+  owner,
+  repo,
+  since,
+  until
+) => async dispatch => {
   try {
-    const {data: commits} = await axios.get(`api/repos/${owner}/${repo}/commits/${since}/${until}`)
+    const {data: commits} = await axios.get(
+      `api/repos/${owner}/${repo}/commits/${since}/${until}`
+    )
     dispatch(setCommits(commits))
   } catch (err) {
     console.error(err)
   }
 }
-export const fetchPulls = (owner, repo) => async dispatch => {
+export const fetchPulls = (owner, repo, pullObj) => async dispatch => {
   try {
+    // if (Object.keys(state).includes('repos')) {
+    //   state.repos.commits.isFetching = true
+    // } else {
+    //   initialState.commits.isFetching = true
+    // }
+    pullObj.isFetching = true
+
     const {data: pulls} = await axios.get(`api/repos/${owner}/${repo}/pulls`)
     dispatch(setPulls(pulls))
   } catch (err) {
-    console.err(err)
+    console.error(err)
   }
 }
 
@@ -55,25 +84,18 @@ const handlers = {
     return {...state, repository: action.repository}
   },
   [SET_COMMITS]: (state, action) => {
-    return {...state, commits: action.commits}
+    return {...state, commits: {isFetching: false, array: action.commits}}
   },
   [SET_PULLS]: (state, action) => {
-    let pullRequests = []
-    if(!action.pulls.length){
-      pullRequests.push(null)
-    } else {
-      pullRequests = action.pulls
-    }
-    return {...state, pulls: pullRequests}
+    return {...state, pulls: {isFetching: false, array: action.pulls}}
   }
 }
 
 // REDUCER
-export default function (state = initialState, action) {
+export default function(state = initialState, action) {
   if (!handlers.hasOwnProperty(action.type)) {
     return state
   } else {
     return handlers[action.type](state, action)
   }
 }
-
