@@ -27,34 +27,18 @@ export const yDomainFunc = () => {
 }
 
 // MOUSE OVER FUNCTION
-function handleMouseOver(d, i) {
-  // Add interactivity
+export function handleMouseOver(d, i){
   console.log('MOUSED OVER')
-  // Use D3 to select element, change color and size
   d3
     .select(this)
-    .style('fill', 'orange')
     .style('opacity', 1)
     .attr('r', '10px')
-
-  // div
-  //   .transition()
-  //   .duration(500)
-  //   .style('opacity', 0)
-  // div
-  //   .transition()
-  //   .duration(200)
-  //   .style('opacity', 0.9)
-  //   .text('HELLO WORLD')
-  // div .html(<h1>HELLO WORLD</h1>)
 }
 
-
 // MOUSE OUT FUNCTION
-function handleMouseOut(d, i) {
+export function handleMouseOut(){
   d3
     .select(this)
-    .attr('r', circleRadius)
-    .style('fill', '#0096FF')
+    .attr('r', '5px')
     .style('opacity', 0.5)
 }

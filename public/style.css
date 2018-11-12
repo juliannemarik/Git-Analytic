@@ -49,13 +49,6 @@ form div {
   letter-spacing: 2.5px;
 }
 
-/* #axisX .tick:last-child text {
-  visibility: hidden;
-}
-#axisX .tick:nth-child(2) text {
-  visibility: hidden;
-} */
-
 div.tooltip {
   position: absolute;
   text-align: center;

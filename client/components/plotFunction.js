@@ -1,6 +1,5 @@
 import * as d3 from 'd3'
-import {xDomainFunc, yDomainFunc} from './helperFunctions'
-import React from 'react'
+import {xDomainFunc, yDomainFunc, handleMouseOut} from './helperFunctions'
 
 // CREATE ORIGINAL PLOT
 // ----------------------
@@ -177,6 +176,31 @@ export const createPlot = (node, commits, pulls) => {
     commitCircles.exit().remove()
     pullCircles.exit().remove()
 
+    // DEFINE DIV FOR TOOLTIP
+    const div = d3.select(node)
+      .append('div')
+      .attr('class', 'tooltip')
+      .style('opacity', 0)
+
+    function handleMouseOver(d, i) {
+      // d3
+      //   .select(this)
+      //   .style('opacity', 1)
+      //   .attr('r', '10px')
+      div
+        .transition()
+        .duration(500)
+        .style('opacity', 0)
+      div
+        .transition()
+        .duration(200)
+        .attr('width', '100px')
+        .attr('height','100px')
+        .style('opacity', 0.9)
+        .style('fill', 'red')
+      div.html('<a href= "http://google.com">')
+    }
+
     // MERGE CIRCLES
     commitCircles = commitCircles
       .merge(enter)
@@ -190,21 +214,30 @@ export const createPlot = (node, commits, pulls) => {
       })
       .attr('r', circleRadius)
       .style('fill', '#0096FF')
-      .style('opacity', function(d){
+      .style('opacity', function(d) {
         return commitVisibility ? 0.5 : 0
       })
       .style('stroke', '#011993')
       .style('stroke-width', '1px')
-      // .on('mouseover', handleMouseOver)
-      // .on('mouseout', handleMouseOut)
 
-      commitCircles = plotGroup.selectAll('circle.commits')
-
-    // // DEFINE DIV
-    // var div = plot
-    //   .append('div')
-    //   .attr('class', 'tooltip')
-    //   .style('opacity', 0)
+    commitCircles = plotGroup
+      .selectAll('circle.commits')
+      .on('mouseover', function(d) {
+        div
+          .transition()
+          .duration(500)
+          .style('opacity', 0)
+        div
+          .transition()
+          .duration(200)
+          .style('opacity', 0.9)
+        div.html(
+          '<a href= "http://google.com">'
+        )
+        .style("left", (d3.event.pageX) + "px")
+				.style("top", (d3.event.pageY - 28) + "px");
+      })
+      .on('mouseout', handleMouseOut)
 
     pullCircles = pullCircles
       .merge(enterPulls)
@@ -218,12 +251,15 @@ export const createPlot = (node, commits, pulls) => {
       })
       .attr('r', circleRadius)
       .style('fill', '#FFB20E')
-      .style('opacity', function(d){
+      .style('opacity', function(d) {
         return pullVisibility ? 0.5 : 0
       })
       .style('stroke', '#E8750B')
       .style('stroke-width', '1px')
 
-      pullCircles = plotGroup.selectAll('circle.pulls')
+    pullCircles = plotGroup
+      .selectAll('circle.pulls')
+      .on('mouseover', handleMouseOver)
+      .on('mouseout', handleMouseOut)
   }
 }
