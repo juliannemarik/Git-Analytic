@@ -145,6 +145,9 @@ export const createPlot = (node, commits, pulls) => {
   // ----------------------
   return function update(updatedCommits, updatedPulls) {
     // RE-DEFINE COMMITS & PULLS
+    const commitVisibility = updatedCommits.visibility
+    const pullVisibility = updatedPulls.visibility
+
     updatedCommits = updatedCommits.array
     updatedPulls = updatedPulls.array
 
@@ -169,8 +172,8 @@ export const createPlot = (node, commits, pulls) => {
       .enter()
       .append('circle')
       .attr('class', 'pulls')
-      .style('fill', 'blue')
-      .style('opacity', 1)
+      .style('fill', 'white')
+      .style('opacity', 0)
     commitCircles.exit().remove()
     pullCircles.exit().remove()
 
@@ -187,7 +190,9 @@ export const createPlot = (node, commits, pulls) => {
       })
       .attr('r', circleRadius)
       .style('fill', '#0096FF')
-      .style('opacity', 0.5)
+      .style('opacity', function(d){
+        return commitVisibility ? 0.5 : 0
+      })
       .style('stroke', '#011993')
       .style('stroke-width', '1px')
       // .on('mouseover', handleMouseOver)
@@ -213,11 +218,12 @@ export const createPlot = (node, commits, pulls) => {
       })
       .attr('r', circleRadius)
       .style('fill', '#FFB20E')
-      .style('opacity', 0.5)
+      .style('opacity', function(d){
+        return pullVisibility ? 0.5 : 0
+      })
       .style('stroke', '#E8750B')
       .style('stroke-width', '1px')
 
       pullCircles = plotGroup.selectAll('circle.pulls')
-
   }
 }

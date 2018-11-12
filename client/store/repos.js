@@ -5,8 +5,10 @@ const SET_OWNER = 'SET_OWNER'
 const SET_REPOSITORY = 'SET_REPOSITORY'
 const SET_COMMITS = 'SET_COMMITS'
 const SET_PULLS = 'SET_PULLS'
-const CLEAR_COMMITS = 'CLEAR_COMMITS'
-const CLEAR_PULLS = 'CLEAR_PULLS'
+const SET_CONTRIBUTORS = 'SET_CONTRIBUTORS'
+const TOGGLE_COMMITS = 'TOGGLE_COMMITS'
+const TOGGLE_PULLS = 'TOGGLE_PULLS'
+const RESET_DATA_VISIBILITY = 'RESET_DATA_VISIBILITY'
 
 // INITIAL STATE
 const initialState = {
@@ -14,9 +16,15 @@ const initialState = {
   repository: '',
   commits: {
     isFetching: false,
-    array: []
+    array: [],
+    visibility: true
   },
   pulls: {
+    isFetching: false,
+    array: [],
+    visibility: true
+  },
+  contributors: {
     isFetching: false,
     array: []
   }
@@ -27,9 +35,10 @@ export const setOwner = owner => ({type: SET_OWNER, owner})
 export const setRepository = repository => ({type: SET_REPOSITORY, repository})
 const setCommits = commits => ({type: SET_COMMITS, commits})
 const setPulls = pulls => ({type: SET_PULLS, pulls})
-export const clearCommits = () => ({type: CLEAR_COMMITS})
-export const clearPulls = () => ({type: CLEAR_PULLS})
-
+const setContributors = contributors => ({type: SET_CONTRIBUTORS, contributors})
+export const toggleCommits = (visibility) => ({type: TOGGLE_COMMITS, visibility})
+export const togglePulls = (visibility) => ({type: TOGGLE_PULLS, visibility})
+export const resetDataVisibility = () => ({type: RESET_DATA_VISIBILITY})
 
 // THUNK CREATORS
 export const fetchCommits = (owner, repo, commitObj) => async dispatch => {
@@ -74,6 +83,15 @@ export const fetchPullsByDate = (owner, repo, since, until, pullObj) => async di
     console.error(err)
   }
 }
+export const fetchContributors = (owner, repo, contributorObj) => async dispatch => {
+  try {
+    contributorObj.isFetching = true
+    const {data: contributors} = await axios.get(`api/repos/${owner}/${repo}/stats/contributors`)
+    dispatch(setContributors(contributors))
+  } catch (err) {
+    console.error(err)
+  }
+}
 
 // HANDLERS
 const handlers = {
@@ -84,16 +102,22 @@ const handlers = {
     return {...state, repository: action.repository}
   },
   [SET_COMMITS]: (state, action) => {
-    return {...state, commits: {isFetching: false, array: action.commits}}
+    return {...state, commits: {isFetching: false, array: action.commits, visibility: true}}
   },
   [SET_PULLS]: (state, action) => {
-    return {...state, pulls: {isFetching: false, array: action.pulls}}
+    return {...state, pulls: {isFetching: false, array: action.pulls, visibility: true}}
   },
-  [CLEAR_COMMITS]: (state, action) => {
-    return {...state, commits: {isFetching: false, array: []}}
+  [SET_CONTRIBUTORS]: (state, action) => {
+    return {...state, contributors: {isFetching: false, array: action.contributors}}
   },
-  [CLEAR_PULLS]: (state, action) => {
-    return {...state, pulls: {isFetching: false, array: []}}
+  [TOGGLE_COMMITS]: (state, action) => {
+    return {...state, commits: {...state.commits, visibility: action.visibility}}
+  },
+  [TOGGLE_PULLS]: (state, action) => {
+    return {...state, pulls: {...state.pulls, visibility: action.visibility}}
+  },
+  [RESET_DATA_VISIBILITY]: (state, action) => {
+    return {...state, commits: {...state.commits, visibility: true}, pulls: {...state.pulls, visibility: true}}
   }
 }
 
