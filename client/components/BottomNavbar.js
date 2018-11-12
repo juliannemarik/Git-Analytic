@@ -138,11 +138,7 @@ class BottomNavbar extends React.Component {
 
   handleContributorChange = async event => {
     const contributorObj = this.props.contributors.array.find((contributor) => contributor.login === event.target.value)
-    console.log("CONTRIBUTOR", contributorObj)
-
     await this.setState({contributorLogin: event.target.value, contributor: contributorObj})
-
-    this.props.togglePulls(false)
   }
 
   render() {
@@ -179,9 +175,7 @@ class BottomNavbar extends React.Component {
                   value="pulls"
                   control={<Radio />}
                   label={
-                    <Typography className={classes.ButtonText}>
-                      PULL REQUESTS
-                    </Typography>
+                    <Typography className={classes.buttonText}>PULL REQUESTS</Typography>
                   }
                 />
               </RadioGroup>

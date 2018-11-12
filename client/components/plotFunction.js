@@ -1,5 +1,5 @@
 import * as d3 from 'd3'
-import {xDomainFunc, yDomainFunc} from './helperFunctions'
+import {xDomainFunc, yDomainFunc, handleMouseOut} from './helperFunctions'
 import React from 'react'
 
 // CREATE ORIGINAL PLOT
@@ -177,6 +177,14 @@ export const createPlot = (node, commits, pulls) => {
     commitCircles.exit().remove()
     pullCircles.exit().remove()
 
+    // DEFINE DIV FOR TOOLTIP
+    const div = d3
+      .select(node)
+      .append('div')
+      .attr('class', 'tooltip')
+      .style('opacity', 0)
+
+
     // MERGE CIRCLES
     commitCircles = commitCircles
       .merge(enter)
@@ -190,21 +198,32 @@ export const createPlot = (node, commits, pulls) => {
       })
       .attr('r', circleRadius)
       .style('fill', '#0096FF')
-      .style('opacity', function(d){
+      .style('opacity', function(d) {
         return commitVisibility ? 0.5 : 0
       })
       .style('stroke', '#011993')
       .style('stroke-width', '1px')
-      // .on('mouseover', handleMouseOver)
-      // .on('mouseout', handleMouseOut)
 
-      commitCircles = plotGroup.selectAll('circle.commits')
-
-    // // DEFINE DIV
-    // var div = plot
-    //   .append('div')
-    //   .attr('class', 'tooltip')
-    //   .style('opacity', 0)
+    commitCircles = plotGroup
+      .selectAll('circle.commits')
+      .on('mouseover', function(d){
+        div
+        .transition()
+        .duration(500)
+        .style('opacity', 0)
+      div
+        .transition()
+        .duration(200)
+        .style('opacity', 0.9)
+      div
+        .html(`<p><b>message:</b> ${d.message}</p>` + `<p><b>committer:</b> ${d.userName}</p>`)
+        .style('left', d3.event.pageX + 30 + 'px')
+        .style('top', d3.event.pageY - 30 + 'px')
+      })
+      .on('mouseout', function(){
+        div
+          .style('opacity', 0)
+      })
 
     pullCircles = pullCircles
       .merge(enterPulls)
@@ -218,12 +237,31 @@ export const createPlot = (node, commits, pulls) => {
       })
       .attr('r', circleRadius)
       .style('fill', '#FFB20E')
-      .style('opacity', function(d){
+      .style('opacity', function(d) {
         return pullVisibility ? 0.5 : 0
       })
       .style('stroke', '#E8750B')
       .style('stroke-width', '1px')
 
-      pullCircles = plotGroup.selectAll('circle.pulls')
+      pullCircles = plotGroup
+      .selectAll('circle.pulls')
+      .on('mouseover', function(d){
+        div
+        .transition()
+        .duration(500)
+        .style('opacity', 0)
+      div
+        .transition()
+        .duration(200)
+        .style('opacity', 0.9)
+      div
+        .html(`<p><b>title:</b> ${d.title}</p>` + `<p><b>author:</b> ${d.userName}</p>`)
+        .style('left', d3.event.pageX + 30 +'px')
+        .style('top', d3.event.pageY - 30 + 'px')
+      })
+      .on('mouseout', function(){
+        div
+          .style('opacity', 0)
+      })
   }
 }
