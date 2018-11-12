@@ -1,5 +1,6 @@
 import * as d3 from 'd3'
 import {xDomainFunc, yDomainFunc, handleMouseOut} from './helperFunctions'
+import React from 'react'
 
 // CREATE ORIGINAL PLOT
 // ----------------------
@@ -177,29 +178,12 @@ export const createPlot = (node, commits, pulls) => {
     pullCircles.exit().remove()
 
     // DEFINE DIV FOR TOOLTIP
-    const div = d3.select(node)
+    const div = d3
+      .select(node)
       .append('div')
       .attr('class', 'tooltip')
       .style('opacity', 0)
 
-    function handleMouseOver(d, i) {
-      // d3
-      //   .select(this)
-      //   .style('opacity', 1)
-      //   .attr('r', '10px')
-      div
-        .transition()
-        .duration(500)
-        .style('opacity', 0)
-      div
-        .transition()
-        .duration(200)
-        .attr('width', '100px')
-        .attr('height','100px')
-        .style('opacity', 0.9)
-        .style('fill', 'red')
-      div.html('<a href= "http://google.com">')
-    }
 
     // MERGE CIRCLES
     commitCircles = commitCircles
@@ -222,22 +206,24 @@ export const createPlot = (node, commits, pulls) => {
 
     commitCircles = plotGroup
       .selectAll('circle.commits')
-      .on('mouseover', function(d) {
+      .on('mouseover', function(d){
         div
-          .transition()
-          .duration(500)
-          .style('opacity', 0)
-        div
-          .transition()
-          .duration(200)
-          .style('opacity', 0.9)
-        div.html(
-          '<a href= "http://google.com">'
-        )
-        .style("left", (d3.event.pageX) + "px")
-				.style("top", (d3.event.pageY - 28) + "px");
+        .transition()
+        .duration(500)
+        .style('opacity', 0)
+      div
+        .transition()
+        .duration(200)
+        .style('opacity', 0.9)
+      div
+        .html(`<p><b>message:</b> ${d.message}</p>` + `<p><b>committer:</b> ${d.userName}</p>`)
+        .style('left', d3.event.pageX + 30 + 'px')
+        .style('top', d3.event.pageY - 30 + 'px')
       })
-      .on('mouseout', handleMouseOut)
+      .on('mouseout', function(){
+        div
+          .style('opacity', 0)
+      })
 
     pullCircles = pullCircles
       .merge(enterPulls)
@@ -257,9 +243,25 @@ export const createPlot = (node, commits, pulls) => {
       .style('stroke', '#E8750B')
       .style('stroke-width', '1px')
 
-    pullCircles = plotGroup
+      pullCircles = plotGroup
       .selectAll('circle.pulls')
-      .on('mouseover', handleMouseOver)
-      .on('mouseout', handleMouseOut)
+      .on('mouseover', function(d){
+        div
+        .transition()
+        .duration(500)
+        .style('opacity', 0)
+      div
+        .transition()
+        .duration(200)
+        .style('opacity', 0.9)
+      div
+        .html(`<p><b>title:</b> ${d.title}</p>` + `<p><b>author:</b> ${d.userName}</p>`)
+        .style('left', d3.event.pageX + 30 +'px')
+        .style('top', d3.event.pageY - 30 + 'px')
+      })
+      .on('mouseout', function(){
+        div
+          .style('opacity', 0)
+      })
   }
 }

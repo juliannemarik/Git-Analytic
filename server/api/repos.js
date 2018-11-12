@@ -159,7 +159,7 @@ commitFilter = data => {
           commit.commit.committer.date,
           'HH:MM:ss'
         )}`,
-        userName: commit.commit.committer.name,
+        userName: commit.author.login,
         userEmail: commit.commit.committer.email,
         // userAvatarUrl: commit.committer.avatar_url
       })
@@ -174,6 +174,7 @@ pullFilter = data => {
   data.forEach(pull => {
     filteredPulls.push({
       title: pull.title,
+      userName: pull.user.login,
       // userAvatarUrl: pull.user.avatar_url,
       dateCreated: dateFormat(pull.created_at, 'mmmm d, yyyy, HH:MM:ss'),
       timeCreated: `January 1, 2000, ${dateFormat(
