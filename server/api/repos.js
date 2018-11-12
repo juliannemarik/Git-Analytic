@@ -137,7 +137,8 @@ contributorFilter = data => {
   data.forEach(contributor => {
     filteredContributors.push({
       totalCommits: contributor.total,
-      login: contributor.author.login
+      login: contributor.author.login,
+      avatar: contributor.author.avatar_url
     })
   })
   return filteredContributors

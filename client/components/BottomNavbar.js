@@ -1,7 +1,13 @@
 // EXTERNAL IMPORTS
 import React from 'react'
 import {connect} from 'react-redux'
-import {fetchCommitsByDate, fetchPullsByDate, toggleCommits, togglePulls, resetDataVisibility} from '../store'
+import {
+  fetchCommitsByDate,
+  fetchPullsByDate,
+  toggleCommits,
+  togglePulls,
+  resetDataVisibility
+} from '../store'
 const dateFormat = require('dateformat')
 
 // MATERIAL UI IMPORTS
@@ -16,7 +22,7 @@ import Radio from '@material-ui/core/Radio'
 import RadioGroup from '@material-ui/core/RadioGroup'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Typography from '@material-ui/core/Typography'
-
+import Avatar from '@material-ui/core/Avatar'
 
 const styles = theme => ({
   root: {
@@ -52,7 +58,7 @@ const styles = theme => ({
     letterSpacing: theme.spacing.unit * 1 / 4
   },
   contributors: {
-    width:'9vw'
+    width: '9vw'
   },
   appBar: {
     top: 'auto',
@@ -66,7 +72,9 @@ const styles = theme => ({
   },
   right: {
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    width: '55%',
   },
   left: {
     display: 'flex',
@@ -74,13 +82,21 @@ const styles = theme => ({
   },
   radioGroup: {
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: 'row'
   },
-  radioText: {
+  buttonText: {
     fontSize: '12px',
     fontWeight: 300,
     color: 'inherit',
     letterSpacing: theme.spacing.unit * 1 / 4
+  },
+  contributorText: {
+    marginRight: '15px',
+  },
+  avatar: {
+    margin: 10,
+    width: 35,
+    height: 35,
   }
 })
 
@@ -88,28 +104,45 @@ class BottomNavbar extends React.Component {
   state = {
     startDate: dateFormat(new Date(), 'isoUtcDateTime'),
     endDate: dateFormat(new Date(), 'isoUtcDateTime'),
-    display: 'all'
+    display: 'all',
+    contributorLogin: '',
+    contributor: {}
   }
 
   handleDateChange = dateType => async date => {
     await this.setState({[dateType]: dateFormat(date, 'isoUtcDateTime')})
     const {commits, pulls, owner, repository} = this.props
     let {startDate, endDate} = this.state
-    this.props.fetchCommitsByDate(owner, repository, startDate, endDate, commits)
+    this.props.fetchCommitsByDate(
+      owner,
+      repository,
+      startDate,
+      endDate,
+      commits
+    )
     this.props.fetchPullsByDate(owner, repository, startDate, endDate, pulls)
   }
 
   handleDisplayChange = event => {
     this.setState({display: event.target.value})
-    if(event.target.value === 'all'){
+    if (event.target.value === 'all') {
       this.props.resetDataVisibility()
-    } else if(event.target.value === 'commits'){
+    } else if (event.target.value === 'commits') {
       this.props.togglePulls(false)
       this.props.toggleCommits(true)
-    } else if (event.target.value === 'pulls'){
+    } else if (event.target.value === 'pulls') {
       this.props.toggleCommits(false)
       this.props.togglePulls(true)
     }
+  }
+
+  handleContributorChange = async event => {
+    const contributorObj = this.props.contributors.array.find((contributor) => contributor.login === event.target.value)
+    console.log("CONTRIBUTOR", contributorObj)
+
+    await this.setState({contributorLogin: event.target.value, contributor: contributorObj})
+
+    this.props.togglePulls(false)
   }
 
   render() {
@@ -118,8 +151,8 @@ class BottomNavbar extends React.Component {
       <div className={classes.root}>
         <AppBar position="fixed" color="default" className={classes.appBar}>
           <Toolbar className={classes.toolbar}>
-            <div className={classes.left} >
-            <RadioGroup
+            <div className={classes.left}>
+              <RadioGroup
                 aria-label="Gender"
                 name="gender1"
                 className={classes.radioGroup}
@@ -127,26 +160,58 @@ class BottomNavbar extends React.Component {
                 onChange={this.handleDisplayChange}
               >
                 <FormControlLabel
-                value="all"
-                control={<Radio />}
-                label={<Typography className={classes.radioText}>ALL</Typography>}
+                  value="all"
+                  control={<Radio />}
+                  label={
+                    <Typography className={classes.buttonText}>ALL</Typography>
+                  }
                 />
                 <FormControlLabel
                   value="commits"
                   control={<Radio />}
-                  label={<Typography className={classes.radioText}>COMMITS</Typography>}                />
+                  label={
+                    <Typography className={classes.buttonText}>
+                      COMMITS
+                    </Typography>
+                  }
+                />
                 <FormControlLabel
                   value="pulls"
                   control={<Radio />}
-                  label={<Typography className={classes.radioText}>PULL REQUESTS</Typography>}                />
+                  label={
+                    <Typography className={classes.ButtonText}>
+                      PULL REQUESTS
+                    </Typography>
+                  }
+                />
               </RadioGroup>
             </div>
             <div className={classes.right}>
+              {this.state.contributorLogin !== '' ? (
+                <React.Fragment>
+                  <Typography
+                    className={`${classes.buttonText} ${
+                      classes.contributorText
+                    }`}
+                    // variant="h6"
+                    color="inherit"
+                  >
+                    {`${this.state.contributor.totalCommits} COMMITS`}
+                  </Typography>
+                  <Avatar
+                    src={this.state.contributor.avatar}
+                    className={classes.avatar}
+                  />
+                </React.Fragment>
+              ) : (
+                <div />
+              )}
+
               <TextField
                 select
                 className={classes.textField}
-                // onChange={this.handleChange}
-                // value={this.state.category}
+                onChange={this.handleContributorChange}
+                value={this.state.contributorLogin}
                 SelectProps={{
                   native: true,
                   MenuProps: {
@@ -232,10 +297,10 @@ const mapDispatch = dispatch => {
     fetchPullsByDate: (owner, repo, since, until, pulls) => {
       dispatch(fetchPullsByDate(owner, repo, since, until, pulls))
     },
-    toggleCommits: (visibility) => {
+    toggleCommits: visibility => {
       dispatch(toggleCommits(visibility))
     },
-    togglePulls: (visibility) => {
+    togglePulls: visibility => {
       dispatch(togglePulls(visibility))
     },
     resetDataVisibility: () => {
