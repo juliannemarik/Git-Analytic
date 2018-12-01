@@ -10,8 +10,8 @@ Clone or fork this repository
 ```
 npm install
 npm run dev-start
-enter the owner and name of any public Github repository
 ```
+Enter the owner and name of any public Github repository
 
 ## Built With
 Node, Express, React, Redux, D3, Github API
