@@ -3,12 +3,14 @@ Git Analytic is a single-page web application to visualize data from any public 
 
 ![](gitAnalytic.gif)
 
+
 ## Getting Started
 Clone or fork this repository
 
 ```
 npm install
 npm run dev-start
+enter the owner and name of any public Github repository
 ```
 
 ## Built With
