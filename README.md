@@ -1,7 +1,7 @@
 # FSA STACKATHON
 The objective of this project was to build use the D3.js library to build a single page application to visualize data from Github's API
 
-<!-- ![](cta-live-tracker.gif) -->
+![](gitAnalytic.gif)
 
 ## Getting Started
 Clone or fork this repository

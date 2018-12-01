@@ -160,6 +160,7 @@ commitFilter = data => {
           'HH:MM:ss'
         )}`,
         userName: commit.author.login,
+        url: commit.html_url,
         userEmail: commit.commit.committer.email,
         // userAvatarUrl: commit.committer.avatar_url
       })

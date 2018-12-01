@@ -27,13 +27,6 @@ export const yDomainFunc = () => {
 }
 
 // MOUSE OVER FUNCTION
-export function handleMouseOver(d, i){
-  console.log('MOUSED OVER')
-  d3
-    .select(this)
-    .style('opacity', 1)
-    .attr('r', '10px')
-}
 
 // MOUSE OUT FUNCTION
 export function handleMouseOut(){

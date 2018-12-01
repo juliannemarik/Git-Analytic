@@ -220,6 +220,9 @@ export const createPlot = (node, commits, pulls) => {
         .style('left', d3.event.pageX + 30 + 'px')
         .style('top', d3.event.pageY - 30 + 'px')
       })
+      .on("click", function (d){
+        window.open(d.url, '_blank')
+      })
       .on('mouseout', function(){
         div
           .style('opacity', 0)

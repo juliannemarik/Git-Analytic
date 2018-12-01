@@ -74,7 +74,7 @@ const styles = theme => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    width: '55%',
+    width: '55%'
   },
   left: {
     display: 'flex',
@@ -91,12 +91,12 @@ const styles = theme => ({
     letterSpacing: theme.spacing.unit * 1 / 4
   },
   contributorText: {
-    marginRight: '15px',
+    marginRight: '15px'
   },
   avatar: {
     margin: 10,
     width: 35,
-    height: 35,
+    height: 35
   }
 })
 
@@ -137,8 +137,13 @@ class BottomNavbar extends React.Component {
   }
 
   handleContributorChange = async event => {
-    const contributorObj = this.props.contributors.array.find((contributor) => contributor.login === event.target.value)
-    await this.setState({contributorLogin: event.target.value, contributor: contributorObj})
+    const contributorObj = this.props.contributors.array.find(
+      contributor => contributor.login === event.target.value
+    )
+    await this.setState({
+      contributorLogin: event.target.value,
+      contributor: contributorObj
+    })
   }
 
   render() {
@@ -147,121 +152,131 @@ class BottomNavbar extends React.Component {
       <div className={classes.root}>
         <AppBar position="fixed" color="default" className={classes.appBar}>
           <Toolbar className={classes.toolbar}>
-            <div className={classes.left}>
-              <RadioGroup
-                aria-label="Gender"
-                name="gender1"
-                className={classes.radioGroup}
-                value={this.state.display}
-                onChange={this.handleDisplayChange}
-              >
-                <FormControlLabel
-                  value="all"
-                  control={<Radio />}
-                  label={
-                    <Typography className={classes.buttonText}>ALL</Typography>
-                  }
-                />
-                <FormControlLabel
-                  value="commits"
-                  control={<Radio />}
-                  label={
-                    <Typography className={classes.buttonText}>
-                      COMMITS
-                    </Typography>
-                  }
-                />
-                <FormControlLabel
-                  value="pulls"
-                  control={<Radio />}
-                  label={
-                    <Typography className={classes.buttonText}>PULL REQUESTS</Typography>
-                  }
-                />
-              </RadioGroup>
-            </div>
-            <div className={classes.right}>
-              {this.state.contributorLogin !== '' ? (
-                <React.Fragment>
-                  <Typography
-                    className={`${classes.buttonText} ${
-                      classes.contributorText
-                    }`}
-                    // variant="h6"
-                    color="inherit"
+            {this.props.owner ? (
+              <React.Fragment>
+                <div className={classes.left}>
+                  <RadioGroup
+                    aria-label="Gender"
+                    name="gender1"
+                    className={classes.radioGroup}
+                    value={this.state.display}
+                    onChange={this.handleDisplayChange}
                   >
-                    {`${this.state.contributor.totalCommits} COMMITS`}
-                  </Typography>
-                  <Avatar
-                    src={this.state.contributor.avatar}
-                    className={classes.avatar}
-                  />
-                </React.Fragment>
-              ) : (
-                <div />
-              )}
+                    <FormControlLabel
+                      value="all"
+                      control={<Radio />}
+                      label={
+                        <Typography className={classes.buttonText}>
+                          ALL
+                        </Typography>
+                      }
+                    />
+                    <FormControlLabel
+                      value="commits"
+                      control={<Radio />}
+                      label={
+                        <Typography className={classes.buttonText}>
+                          COMMITS
+                        </Typography>
+                      }
+                    />
+                    <FormControlLabel
+                      value="pulls"
+                      control={<Radio />}
+                      label={
+                        <Typography className={classes.buttonText}>
+                          PULL REQUESTS
+                        </Typography>
+                      }
+                    />
+                  </RadioGroup>
+                </div>
+                <div className={classes.right}>
+                  {this.state.contributorLogin !== '' ? (
+                    <React.Fragment>
+                      <Typography
+                        className={`${classes.buttonText} ${
+                          classes.contributorText
+                        }`}
+                        // variant="h6"
+                        color="inherit"
+                      >
+                        {`${this.state.contributor.totalCommits} COMMITS`}
+                      </Typography>
+                      <Avatar
+                        src={this.state.contributor.avatar}
+                        className={classes.avatar}
+                      />
+                    </React.Fragment>
+                  ) : (
+                    <div />
+                  )}
 
-              <TextField
-                select
-                className={classes.textField}
-                onChange={this.handleContributorChange}
-                value={this.state.contributorLogin}
-                SelectProps={{
-                  native: true,
-                  MenuProps: {
-                    className: classes.menu
-                  }
-                }}
-                InputProps={{
-                  classes: {
-                    input: `${classes.resizeDate} ${classes.contributors}`
-                  }
-                }}
-                margin="normal"
-              >
-                <option>CONTRIBUTORS</option>
-                {contributors.array.map(contributor => (
-                  <option key={contributor.login} value={contributor.login}>
-                    {contributor.login}
-                  </option>
-                ))}
-              </TextField>
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <InlineDatePicker
-                  onlyCalendar
-                  disableFuture
-                  keyboard
-                  format="MM/dd/yyyy"
-                  className={classes.textField}
-                  InputProps={{
-                    classes: {
-                      input: classes.resizeDate
-                    }
-                  }}
-                  value={this.state.startDate}
-                  onChange={this.handleDateChange('startDate')}
-                  onSubmit={() => {
-                    console.log('SUBMITED')
-                  }}
-                />
-              </MuiPickersUtilsProvider>
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <InlineDatePicker
-                  onlyCalendar
-                  disableFuture
-                  keyboard
-                  format="MM/dd/yyyy"
-                  className={classes.textField}
-                  InputProps={{
-                    classes: {
-                      input: classes.resizeDate
-                    }
-                  }}
-                  value={this.state.endDate}
-                  onChange={this.handleDateChange('endDate')}
-                />
-              </MuiPickersUtilsProvider>
-            </div>
+                  <TextField
+                    select
+                    className={classes.textField}
+                    onChange={this.handleContributorChange}
+                    value={this.state.contributorLogin}
+                    SelectProps={{
+                      native: true,
+                      MenuProps: {
+                        className: classes.menu
+                      }
+                    }}
+                    InputProps={{
+                      classes: {
+                        input: `${classes.resizeDate} ${classes.contributors}`
+                      }
+                    }}
+                    margin="normal"
+                  >
+                    <option>CONTRIBUTORS</option>
+                    {contributors.array.map(contributor => (
+                      <option key={contributor.login} value={contributor.login}>
+                        {contributor.login}
+                      </option>
+                    ))}
+                  </TextField>
+                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <InlineDatePicker
+                      onlyCalendar
+                      disableFuture
+                      keyboard
+                      format="MM/dd/yyyy"
+                      className={classes.textField}
+                      InputProps={{
+                        classes: {
+                          input: classes.resizeDate
+                        }
+                      }}
+                      value={this.state.startDate}
+                      onChange={this.handleDateChange('startDate')}
+                      onSubmit={() => {
+                        console.log('SUBMITED')
+                      }}
+                    />
+                  </MuiPickersUtilsProvider>
+                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <InlineDatePicker
+                      onlyCalendar
+                      disableFuture
+                      keyboard
+                      format="MM/dd/yyyy"
+                      className={classes.textField}
+                      InputProps={{
+                        classes: {
+                          input: classes.resizeDate
+                        }
+                      }}
+                      value={this.state.endDate}
+                      onChange={this.handleDateChange('endDate')}
+                    />
+                  </MuiPickersUtilsProvider>
+                </div>
+              </React.Fragment>
+            ) : (
+              <div />
+            )}
           </Toolbar>
         </AppBar>
       </div>
