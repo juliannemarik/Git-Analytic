@@ -1,5 +1,5 @@
-# FSA STACKATHON
-The objective of this project was to build use the D3.js library to build a single page application to visualize data from Github's API
+# GIT ANALYTIC
+Git Analytic is a single-page web application to visualize data from any public Github repository. I had two main objectives going into this project: 1. to create a data visualization using D3, a Javascript front-end library that uses Scaleable Vector Graphics to create dynamic and ineractive visualizations; 2. to pull data from a 3rd-party API, in this case, Github.
 
 ![](gitAnalytic.gif)
 
@@ -12,7 +12,7 @@ npm run dev-start
 ```
 
 ## Built With
-Node, Express, React, Redux, D3, Mapbox
+Node, Express, React, Redux, D3, Github API
 
 ## Authors
 Julianne Crawford
